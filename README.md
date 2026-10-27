@@ -1,5 +1,7 @@
 # Butin d'Osgild
 
+*Version 0.1.0 bêta*. Les changements sont listés dans [CHANGELOG.md](CHANGELOG.md).
+
 Générateur de trésors pour **Chroniques Oubliées Fantasy 2e édition**, calibré sur le niveau des PJ et le cadre de jeu (classique, high fantasy, low fantasy).
 
 Une page statique, sans backend ni build : elle tourne sur GitHub Pages ou en ouvrant `index.html` dans un navigateur.
@@ -25,6 +27,15 @@ Le butin d'une rencontre détaille aussi la monnaie (pp, po, pa, pc) et l'équip
 Deux choix d'interprétation :
 - les rangs des potions (pour leur valeur) sont estimés quand le sort n'apparaît pas dans les voies du livre de base ;
 - les potions et parchemins de « Nécromancien » sont rattachés au profil Sorcier.
+
+## Versions
+
+Numérotation `MAJEUR.MINEUR.CORRECTIF` (préfixe bêta tant que l'outil est en test) :
+- **correctif** (0.1.**1**) : correction de bug ou ajustement de chiffres ;
+- **mineur** (0.**2**.0) : nouvelle fonctionnalité ;
+- **majeur** (**1**.0.0) : sortie de bêta, ou changement qui casse l'historique enregistré.
+
+À chaque version : mettre à jour le numéro dans `index.html` (pied de page et paramètre `?v=` des fichiers, pour que les navigateurs rechargent les scripts), dans ce README, ajouter une entrée au CHANGELOG et poser un tag Git `vX.Y.Z-beta`.
 
 ## Mettre en ligne
 

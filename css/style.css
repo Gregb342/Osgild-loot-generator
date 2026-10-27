@@ -245,3 +245,6 @@ select {
 .tag { display: inline-block; font-size: .78rem; padding: 0 .45rem; border-radius: 999px; border: 1px solid var(--trait); vertical-align: 1px; }
 .tag-vu { color: var(--lapis); border-color: var(--lapis); }
 .tag-cache { color: var(--gris); }
+
+.version { margin: 0 0 .4rem; }
+.version a { color: inherit; text-underline-offset: 3px; }
