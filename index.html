@@ -15,7 +15,7 @@
 <div class="page">
   <header class="masthead">
     <h1>Butin d'Osgild</h1>
-    <p>Trésors tirés au dé pour Chroniques Oubliées Fantasy 2<sup>e</sup> édition, calibrés sur le niveau des PJ et le cadre de jeu.</p>
+    <p>Trésors tirés au dé pour Chroniques Oubliées Fantasy 2<sup>e</sup> édition, adaptés à la rencontre et calibrés sur le niveau des PJ.</p>
   </header>
 
   <main class="layout">
@@ -40,14 +40,58 @@
 
       <fieldset class="field">
         <legend>Que tirer ?</legend>
-        <div class="seg seg-wrap" role="radiogroup">
-          <label><input type="radio" name="mode" value="butin" checked><span>Butin complet</span></label>
+        <div class="seg seg-mode" role="radiogroup">
+          <label><input type="radio" name="mode" value="rencontre" checked><span>Le butin d'une rencontre</span></label>
           <label><input type="radio" name="mode" value="majeur"><span>Objet majeur</span></label>
           <label><input type="radio" name="mode" value="mineur"><span>Objet mineur</span></label>
           <label><input type="radio" name="mode" value="consommable"><span>Consommable</span></label>
-          <label><input type="radio" name="mode" value="bourse"><span>Bourse</span></label>
         </div>
       </fieldset>
+
+      <div class="groupe" id="f-renc">
+        <div class="field">
+          <label for="source">Sur qui, ou où ?</label>
+          <select id="source" name="source"></select>
+          <p class="aide" id="aide-source"></p>
+        </div>
+
+        <fieldset class="field">
+          <legend>Ampleur</legend>
+          <div class="seg" role="radiogroup">
+            <label><input type="radio" name="ampleur" value="corps" checked><span>Sur les corps</span></label>
+            <label><input type="radio" name="ampleur" value="repaire"><span>Repaire</span></label>
+            <label><input type="radio" name="ampleur" value="fin"><span>Fin d'aventure</span></label>
+          </div>
+          <p class="aide" id="aide-ampleur"></p>
+        </fieldset>
+
+        <div class="field" id="f-adv">
+          <label for="adversaires">Nombre d'adversaires</label>
+          <div class="stepper">
+            <button type="button" data-step="-1" aria-label="Un adversaire de moins">−</button>
+            <input id="adversaires" name="adversaires" type="number" min="1" max="30" value="3" inputmode="numeric">
+            <button type="button" data-step="1" aria-label="Un adversaire de plus">+</button>
+          </div>
+        </div>
+
+        <fieldset class="field" id="f-menace">
+          <legend>Menace pour le groupe</legend>
+          <div class="seg" role="radiogroup">
+            <label><input type="radio" name="menace" value="faible"><span>Plus faible</span></label>
+            <label><input type="radio" name="menace" value="mesure" checked><span>À sa mesure</span></label>
+            <label><input type="radio" name="menace" value="redoutable"><span>Redoutable</span></label>
+          </div>
+        </fieldset>
+
+        <div class="field">
+          <label for="nc">NC précis <span class="facultatif">(facultatif)</span></label>
+          <div class="nc-row">
+            <input id="nc" name="nc" type="number" min="0" max="30" step="0.5" inputmode="decimal" placeholder="Calculé d'après la menace">
+            <button type="button" class="ghost small" id="nc-effacer" hidden>Effacer</button>
+          </div>
+          <p class="aide">Le NC de la rencontre si tu le connais : celui du bestiaire, ou celui d'un groupe (douze gnolls et leur chef font une rencontre NC 7).</p>
+        </div>
+      </div>
 
       <div class="field" id="f-cat" hidden>
         <label for="categorie">Catégorie</label>
@@ -62,14 +106,6 @@
           <button type="button" data-step="1" aria-label="Un objet de plus">+</button>
         </div>
       </div>
-
-      <fieldset class="field" id="f-bourse" hidden>
-        <legend>Taille</legend>
-        <div class="seg" role="radiogroup">
-          <label><input type="radio" name="taille" value="petite" checked><span>Un adversaire</span></label>
-          <label><input type="radio" name="taille" value="magot"><span>Un repaire</span></label>
-        </div>
-      </fieldset>
 
       <p class="cible" id="cible" aria-live="polite"></p>
 
@@ -108,7 +144,7 @@
   </main>
 
   <footer class="foot">
-    <p>Tables issues du livre de base de <i>Chroniques Oubliées Fantasy</i> 2<sup>e</sup> édition, © Black Book Éditions. Les tables d'argent, de gemmes, de descriptions et la composition d'un butin complet sont des règles maison. Outil de fan, gratuit et non officiel.</p>
+    <p>Tables issues du livre de base de <i>Chroniques Oubliées Fantasy</i> 2<sup>e</sup> édition, © Black Book Éditions. Les sources de butin, l'argent, les gemmes, les trouvailles et les descriptions sont des règles maison, inspirées des tables de trésor de D&amp;D. Outil de fan, gratuit et non officiel.</p>
   </footer>
 </div>
 
@@ -119,8 +155,10 @@
       <p class="item-cat"></p>
       <h3 class="item-nom"></h3>
       <ul class="item-effets"></ul>
+      <ul class="item-trouv"></ul>
       <p class="item-app"></p>
       <p class="item-orig"></p>
+      <ul class="item-notes"></ul>
       <p class="item-alerte"></p>
       <div class="item-foot">
         <p class="item-val"></p>
@@ -137,6 +175,7 @@
 <script src="js/voies.js"></script>
 <script src="js/tables.js"></script>
 <script src="js/maison.js"></script>
+<script src="js/sources.js"></script>
 <script src="js/engine.js"></script>
 <script src="js/app.js"></script>
 </body>

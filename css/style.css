@@ -47,7 +47,6 @@ button, input, select { font: inherit; color: inherit; }
 .layout { display: grid; gap: 1.5rem; align-items: start; }
 @media (min-width: 900px) {
   .layout { grid-template-columns: 21rem 1fr; gap: 2.5rem; }
-  .controls { position: sticky; top: 1rem; }
 }
 
 /* ---------- formulaire ---------- */
@@ -174,3 +173,27 @@ select {
 .toast { position: fixed; left: 50%; bottom: 1.25rem; transform: translateX(-50%); background: var(--encre); color: var(--velin); padding: .6rem 1rem; border-radius: 999px; font-size: .95rem; }
 #vider-histo { margin-top: .9rem; }
 #vider-histo:hover { border-color: var(--sceau); color: var(--sceau); }
+
+/* mode et rencontre */
+.seg-mode { grid-auto-flow: row; grid-template-columns: repeat(3, 1fr); }
+.seg-mode label:first-child { grid-column: 1 / -1; }
+.seg-mode span { border-left: 1px solid var(--trait); border-top: 1px solid var(--trait); }
+.seg-mode label:first-child span { border-top: 0; border-left: 0; }
+.seg-mode label:nth-child(2) span { border-left: 0; }
+.groupe { display: grid; gap: 1.1rem; padding: 1rem 0 .1rem; border-top: 1px solid var(--trait); }
+.groupe[hidden] { display: none; }
+.aide { margin: 0; color: var(--gris); font-size: .9rem; line-height: 1.4; }
+.aide:empty { display: none; }
+.facultatif { font-weight: 400; color: var(--gris); }
+.nc-row { display: flex; gap: .5rem; align-items: center; }
+.nc-row input {
+  flex: 1; min-width: 0; min-height: 2.75rem; padding: 0 .75rem; border: 1px solid var(--trait);
+  border-radius: 10px; background: var(--pierre); font: 700 1.1rem var(--serif);
+}
+.nc-row input::placeholder { font: 400 .95rem var(--sans); color: var(--gris); }
+.inactif .seg { opacity: .45; }
+.item-trouv { margin: 0 0 .7rem; padding-left: 1.1rem; }
+.item-trouv:empty, .item-notes:empty { display: none; }
+.item-notes { margin: 0 0 .5rem; padding: .6rem .8rem .6rem 1.9rem; background: var(--laiton-pale); border-radius: 10px; font-size: .95rem; }
+.item-notes li + li { margin-top: .3rem; }
+.item-trouv::before { content: "Trouvailles"; display: block; margin: 0 0 .2rem -1.1rem; font-size: .9rem; color: var(--gris); }

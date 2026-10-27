@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  const M = window.MOTEUR, T = window.LIVRE;
+  const M = window.MOTEUR, T = window.LIVRE, S = window.SOURCES;
   const $ = s => document.querySelector(s);
   const form = $("#form"), sortie = $("#sortie"), tpl = $("#tpl-objet");
 
@@ -23,7 +23,10 @@
     return {
       niveau: Math.min(20, Math.max(1, parseInt(f.get("niveau"), 10) || 1)),
       cadre: f.get("cadre"), mode: f.get("mode"), categorie: f.get("categorie") || "hasard",
-      nombre: Math.min(8, Math.max(1, parseInt(f.get("nombre"), 10) || 1)), taille: f.get("taille")
+      nombre: Math.min(8, Math.max(1, parseInt(f.get("nombre"), 10) || 1)),
+      source: f.get("source"), ampleur: f.get("ampleur"), menace: f.get("menace"),
+      adversaires: Math.min(30, Math.max(1, parseInt(f.get("adversaires"), 10) || 1)),
+      nc: f.get("nc") === "" || isNaN(parseFloat(f.get("nc"))) ? "" : Math.max(0, parseFloat(f.get("nc")))
     };
   }
 
@@ -40,14 +43,26 @@
     const objets = ["majeur", "mineur", "consommable"].includes(v.mode);
     $("#f-cat").hidden = !objets;
     $("#f-nb").hidden = !objets;
-    $("#f-bourse").hidden = v.mode !== "bourse";
+    $("#f-renc").hidden = objets;
     if (objets) majCategories(v.mode);
+    const src = S.liste.find(x => x.id === v.source);
+    $("#aide-source").textContent = src ? src.aide : "";
+    $("#aide-ampleur").textContent = S.ampleur[v.ampleur].aide;
+    $("#f-adv").hidden = v.ampleur !== "corps";
+    $("#f-menace").classList.toggle("inactif", v.nc !== "");
+    $("#f-menace").title = v.nc !== "" ? "Le NC précis remplace la menace" : "";
+    $("#nc-effacer").hidden = v.nc === "";
     $("#cible").innerHTML = texteCible(v);
     store.set("form", v);
   }
 
   function nmTxt(x) { return x === "C" ? "consommables seulement" : x === 0 ? "aucun objet magique" : "niveau de magie " + x; }
   function texteCible(v) {
+    if (v.mode === "rencontre") {
+      const nc = M.ncRencontre(v.niveau, v.menace, v.nc);
+      const maj = M.nmCible(v.niveau, v.cadre, "majeur");
+      return `Rencontre <strong>NC ${nc === 0.5 ? "½" : nc}</strong>${v.nc === "" ? "" : " (saisi)"}. Pour des PJ de niveau ${v.niveau} en cadre ${CADRES[v.cadre]}, les objets magiques sont plafonnés : objet majeur <strong>${nmTxt(maj)}</strong>.`;
+    }
     const maj = M.nmCible(v.niveau, v.cadre, "majeur"), min = M.nmCible(v.niveau, v.cadre, "mineur");
     const plafond = Math.floor(v.niveau * T.plafondTotal[v.cadre]);
     return `Au niveau ${v.niveau} en cadre ${CADRES[v.cadre]} : objet majeur <strong>${nmTxt(maj)}</strong>, objet mineur <strong>${nmTxt(min)}</strong>. Total porté par PJ : ${plafond} niveaux de magie au plus.`;
@@ -67,8 +82,7 @@
   let courant = [];
 
   function tirer(v) {
-    if (v.mode === "butin") return M.butin(v);
-    if (v.mode === "bourse") return [M.bourse(v.niveau, v.taille)];
+    if (v.mode === "rencontre") return M.rencontre({ niveau: v.niveau, cadre: v.cadre, source: v.source, ampleur: v.ampleur, menace: v.menace, ncPrecis: v.nc, nombre: v.adversaires });
     const out = [];
     for (let i = 0; i < v.nombre; i++) {
       const o = M.objet({ niveau: v.niveau, cadre: v.cadre, rang: v.mode, categorie: v.categorie });
@@ -84,9 +98,11 @@
     else if (o.consommable || !o.nm) { sceau.classList.add("conso"); s.textContent = "C"; }
     else s.textContent = o.nm;
     sceau.title = o.bourse ? "Argent et valeurs" : (o.consommable || !o.nm) ? "Consommable : niveau de magie 0" : "Niveau de magie " + o.nm;
-    n.querySelector(".item-cat").textContent = o.cat;
+    n.querySelector(".item-cat").textContent = o.source ? o.source + ", " + o.ampleur.toLowerCase() : o.cat;
     n.querySelector(".item-nom").textContent = o.nom;
     n.querySelector(".item-effets").innerHTML = o.effets.map(e => `<li>${esc(e)}</li>`).join("");
+    n.querySelector(".item-trouv").innerHTML = (o.trouvailles || []).map(e => `<li>${esc(e)}</li>`).join("");
+    n.querySelector(".item-notes").innerHTML = (o.notes || []).map(e => `<li>${esc(e)}</li>`).join("");
     n.querySelector(".item-app").textContent = o.apparence || "";
     if (o.origine) n.querySelector(".item-orig").innerHTML =
       `<b>Origine :</b> ${esc(o.origine.provenance)}, ${esc(o.origine.epoque)}, ${esc(o.origine.peuple)}.`;
@@ -135,7 +151,12 @@
     majHisto();
   }
   function resume(v) {
-    const quoi = { butin: "Butin complet", majeur: "Objet majeur", mineur: "Objet mineur", consommable: "Consommable", bourse: "Bourse" }[v.mode];
+    if (v.mode === "rencontre") {
+      const src = S.liste.find(x => x.id === v.source);
+      const nc = M.ncRencontre(v.niveau, v.menace, v.nc);
+      return `${src ? src.nom : "Rencontre"}, ${S.ampleur[v.ampleur].label.toLowerCase()}, NC ${nc === 0.5 ? "½" : nc}`;
+    }
+    const quoi = { majeur: "Objet majeur", mineur: "Objet mineur", consommable: "Consommable" }[v.mode] || "Tirage";
     return `${quoi}, niveau ${v.niveau}, ${CADRES[v.cadre]}`;
   }
   function majHisto() {
@@ -172,8 +193,10 @@
   /* ---------- copier ---------- */
   function enTexte(lot) {
     return lot.map(o => {
-      const l = [`• ${o.nom} (${o.cat}${o.nm ? ", niveau de magie " + o.nm : ""})`];
+      const l = [`• ${o.nom} (${o.source ? o.source + ", " + o.ampleur.toLowerCase() : o.cat}${o.nm ? ", niveau de magie " + o.nm : ""})`];
       o.effets.forEach(e => l.push("  - " + e));
+      (o.trouvailles || []).forEach(e => l.push("  - " + e));
+      (o.notes || []).forEach(e => l.push("  ! " + e));
       if (o.apparence) l.push("  Description : " + o.apparence);
       if (o.origine) l.push(`  Origine : ${o.origine.provenance}, ${o.origine.epoque}, ${o.origine.peuple}`);
       if (o.valeur && !o.bourse) l.push("  Valeur : " + M.argent(o.valeur));
@@ -207,11 +230,17 @@
   function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
 
   /* ---------- démarrage ---------- */
+  $("#source").innerHTML = S.liste.map(x => `<option value="${x.id}">${esc(x.nom)}</option>`).join("");
+  $("#nc-effacer").addEventListener("click", () => { form.nc.value = ""; majForm(); form.nc.focus(); });
   const prev = store.get("form", null);
   if (prev) {
+    if (prev.mode === "butin" || prev.mode === "bourse") prev.mode = "rencontre";
     form.niveau.value = prev.niveau || 3;
-    ["cadre", "mode", "taille"].forEach(k => { const r = form.querySelector(`input[name="${k}"][value="${prev[k]}"]`); if (r) r.checked = true; });
+    ["cadre", "mode", "ampleur", "menace"].forEach(k => { const r = form.querySelector(`input[name="${k}"][value="${prev[k]}"]`); if (r) r.checked = true; });
     form.nombre.value = prev.nombre || 1;
+    form.adversaires.value = prev.adversaires || 3;
+    form.nc.value = prev.nc === undefined ? "" : prev.nc;
+    if (prev.source && S.liste.some(x => x.id === prev.source)) form.source.value = prev.source;
   }
   majForm();
   if (prev && prev.categorie) { $("#categorie").value = prev.categorie; if (!$("#categorie").value) $("#categorie").value = "hasard"; }

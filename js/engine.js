@@ -46,6 +46,7 @@
 
   /* ---------- valeurs ---------- */
   function argent(pa) {
+    if (pa > 0 && pa < 1) return Math.max(1, Math.round(pa * 10)) * 10 + " pc";
     pa = Math.round(pa);
     if (pa < 100) return pa + " pa";
     const po = Math.floor(pa / 10), r = pa % 10;
@@ -55,10 +56,18 @@
   const valeurSort = r => r * r * 50;               // en pa
 
   /* ---------- origine ---------- */
-  function origine(log) {
-    const o = T.origine, a = d(10), b = d(10), c = d(10);
-    log.push({ de: "3d10", v: a + ", " + b + ", " + c, txt: "origine (provenance, époque, peuple)" });
-    return { provenance: o.provenance[a - 1], epoque: o.epoque[b - 1], peuple: o.peuple[c - 1] };
+  function origine(log, fixe) {
+    fixe = fixe || {};
+    const o = T.origine, a = d(10), c = d(10);
+    let b = d(10);
+    const ancienne = fixe.ancienne && b === 1;
+    if (ancienne) b = d(9) + 1;
+    log.push({ de: "3d10", v: a + ", " + b + ", " + c, txt: "origine (provenance, époque, peuple)" + (ancienne ? " ; époque relancée, l'objet est ancien" : "") });
+    return {
+      provenance: fixe.provenance || o.provenance[a - 1],
+      epoque: o.epoque[b - 1],
+      peuple: fixe.peuple || o.peuple[c - 1]
+    };
   }
 
   /* ---------- apparences (tables maison) ---------- */
@@ -300,7 +309,7 @@
     }
     let nm = typeof cible === "number" ? cible : 0;
     const veutPerm = cat !== "hasard" ? PERM.includes(cat) : (typeof cible === "number" && cible > 0);
-    if (cat === "hasard") cat = veutPerm ? pickW(M.poidsPermanents) : pickW(M.poidsConsommables);
+    if (cat === "hasard") cat = veutPerm ? pickW(opts.poidsPerm || M.poidsPermanents) : pickW(opts.poidsConso || M.poidsConsommables);
     if (PERM.includes(cat) && nm < 1) {
       nm = 1;
       alertes.push("Au-dessus de la recommandation du livre pour ce niveau (consommables seulement).");
@@ -310,47 +319,121 @@
     it.log = log;
     it.cible = cible;
     it.alertes = alertes;
-    if (!it.consommable && it.nm > 0) it.origine = origine(log);
+    if (!it.consommable && it.nm > 0) it.origine = origine(log, opts.origine);
     return it;
   }
 
-  /* ---------- bourse ---------- */
-  function bourse(niveau, taille) {
-    const b = M.bourse[taille], log = [];
-    const r = nd(b.des[0], b.des[1]);
-    const pa = r.s * b.parNiveau * niveau;
-    log.push({ de: b.des[0] + "d" + b.des[1], v: r.r.join(" + ") + " = " + r.s, txt: "× " + b.parNiveau + " × niveau " + niveau + " = " + pa + " pa" });
-    const lignes = [argent(pa) + " en pièces"];
-    let total = pa;
-    const nbGemmes = taille === "magot" ? Math.max(0, d(4) - 1) : (d(6) === 6 ? 1 : 0);
-    if (nbGemmes) log.push({ de: "", v: "", txt: nbGemmes + " gemme(s)" });
-    for (let i = 0; i < nbGemmes; i++) {
-      const v = Math.min(20, d(20) + Math.floor(niveau / 3));
-      const g = lookup(M.gemmes, v);
-      log.push({ de: "d20", v, txt: "gemme de " + g[2] + " pa" });
-      lignes.push(cap(any(g[3])) + " (" + argent(g[2]) + ")"); total += g[2];
-    }
-    if (taille === "magot" && d(6) >= 5) {
-      const v = Math.min(20, d(20) + Math.floor(niveau / 3));
-      const o = lookup(M.objetsArt, v);
-      log.push({ de: "d20", v, txt: "objet d'art de " + o[2] + " pa" });
-      lignes.push(cap(any(o[3])) + " (" + argent(o[2]) + ")"); total += o[2];
-    }
-    return { cat: b.label, nom: argent(total) + " au total", nm: null, effets: lignes, log, bourse: true, valeur: total };
+  /* ---------- rencontre ---------- */
+  const S = window.SOURCES;
+  const fmtNC = nc => (nc === 0.5 ? "½" : String(nc));
+  function ncRencontre(niveau, menace, ncPrecis) {
+    if (ncPrecis !== null && ncPrecis !== undefined && ncPrecis !== "" && !isNaN(ncPrecis)) return Math.max(0, +ncPrecis);
+    return Math.max(0, niveau + S.menace[menace].ecart);
+  }
+  const pct = p => d(100) <= Math.round(p * 100);
+  function melange(arr) { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = d(i + 1) - 1; [a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+  function valeurs(log, table, nc, quoi) {
+    const v = d(8), tot = v + Math.floor(nc / 2), row = lookup(table, tot);
+    log.push({ de: "d8", v: v + " + " + Math.floor(nc / 2) + " = " + tot, txt: quoi + " de " + argent(row[2]) });
+    return { txt: cap(any(row[3])), pa: row[2] };
   }
 
-  /* ---------- butin complet ---------- */
-  function butin(opts) {
-    const { niveau, cadre } = opts;
-    const out = [bourse(niveau, "magot")];
-    const compo = d(6), c = lookup(M.composition, compo)[2];
-    const note = { de: "d6", v: compo, txt: { consommables: "consommables seulement", mineur: "un objet mineur et un consommable", majeur: "un objet majeur et des consommables" }[c] };
-    out[0].log.push(note);
-    const add = (rang, n) => { for (let i = 0; i < n; i++) { const o = objet({ niveau, cadre, rang }); if (o) out.push(o); } };
-    if (c === "consommables") add("consommable", d(3));
-    else if (c === "mineur") { add("mineur", 1); add("consommable", 1); }
-    else { add("majeur", 1); add("consommable", d(2)); }
-    return out;
+  function rencontre(opts) {
+    const { niveau, cadre, ampleur } = opts;
+    const src = S.liste.find(x => x.id === opts.source) || S.liste[0];
+    const sp = src.special || [];
+    const saisi = opts.ncPrecis !== null && opts.ncPrecis !== undefined && opts.ncPrecis !== "";
+    const nc = ncRencontre(niveau, opts.menace, opts.ncPrecis);
+    const n = Math.max(1, opts.nombre || 1);
+    const log = [], lignes = [], objets = [], notes = [];
+    let total = 0;
+    log.push({ de: "", v: "", txt: "NC de la rencontre : " + fmtNC(nc) + (saisi ? " (saisi)" : " (" + S.menace[opts.menace].label.toLowerCase() + ", PJ niveau " + niveau + ")") });
+
+    /* pièces */
+    const coef = src.richesse[ampleur];
+    if (coef > 0) {
+      const b = S.bareme[ampleur];
+      let moy = b.base * Math.pow(nc + 1, b.expo) * coef;
+      if (ampleur === "corps") moy *= Math.min(2, 0.7 + 0.1 * n);
+      const r = nd(2, 6);
+      let pa = moy * r.s / 7;
+      pa = pa < 1 ? Math.round(pa * 10) / 10 : Math.round(pa);
+      log.push({ de: "2d6", v: r.r.join(" + ") + " = " + r.s, txt: "pièces : moyenne " + argent(moy) + ", tirage " + argent(pa) });
+      if (pa > 0) {
+        lignes.push(argent(pa) + " en pièces" + (sp.includes("cuivre") ? ", surtout du cuivre" : "")
+          + (ampleur === "corps" && n > 1 ? ", réparties sur " + n + " adversaires" : ""));
+        total += pa;
+        if (sp.includes("fausse")) {
+          const k = d(6), faux = Math.round(pa * k / 10);
+          log.push({ de: "d6", v: k, txt: k * 10 + " % de fausse monnaie" });
+          notes.push("Dont " + argent(faux) + " de fausse monnaie. Test de PER difficulté 15 pour la repérer ; une fausse pièce découverte au marché, c'est la milice.");
+          total -= faux;
+        }
+        if (sp.includes("fees")) {
+          const k = d(6);
+          log.push({ de: "d6", v: k, txt: k <= 3 ? "or des fées" : "les pièces sont réelles" });
+          if (k <= 3) { notes.push("Or des fées : ces pièces redeviendront des feuilles mortes à l'aube."); total -= pa; }
+        }
+        if (sp.includes("ancienne")) notes.push("Monnaie ancienne : un collectionneur ou un sage en donne moitié plus que sa valeur, un changeur moitié moins.");
+        if (sp.includes("etrangere")) notes.push("Monnaie des profondeurs : un changeur la reprend avec 25 % de perte, et pose des questions.");
+      }
+    } else {
+      lignes.push(ampleur === "corps" ? "Pas une pièce : ces créatures ne transportent rien." : "Pas de pièces.");
+    }
+
+    /* gemmes et objets d'art */
+    let nbG = 0, nbA = 0;
+    if (ampleur === "corps") { nbG = pct(0.15 * src.gemmes) ? 1 : 0; }
+    else {
+      nbG = Math.floor(src.gemmes * (d(4) - 1 + nc / 4));
+      nbA = (pct(0.35 * src.art) ? 1 : 0) + (nc >= 8 && pct(0.2 * src.art) ? 1 : 0);
+      if (ampleur === "fin") { nbG += src.gemmes > 0 ? 1 : 0; nbA += pct(0.5 * src.art) ? 1 : 0; }
+    }
+    for (let i = 0; i < nbG; i++) { const g = valeurs(log, S.gemmes, nc, "gemme"); lignes.push(g.txt + " (" + argent(g.pa) + ")"); total += g.pa; }
+    for (let i = 0; i < nbA; i++) { const a = valeurs(log, S.objetsArt, nc, "objet d'art"); lignes.push(a.txt + " (" + argent(a.pa) + ")"); total += a.pa; }
+
+    /* trouvailles */
+    let nbT = ampleur === "corps" ? (coef > 0 ? 1 + (n >= 4 ? 1 : 0) : (d(6) <= 2 ? 1 : 0)) : ampleur === "repaire" ? d(3) : d(3) + 1;
+    const trouv = [];
+    melange(src.trouvailles).slice(0, nbT).forEach(t => {
+      trouv.push(t[0] + (t[1] ? " (" + argent(t[1]) + ")" : ""));
+      if (t[1]) total += t[1];
+    });
+    if (src.composants) {
+      const nbC = 1 + (nc >= 5 ? 1 : 0) + (ampleur === "fin" ? 1 : 0);
+      melange(src.composants).slice(0, nbC).forEach(c => {
+        const v = Math.round(c[1] * (1 + nc / 10));
+        trouv.push(c[0] + " (" + argent(v) + ")"); total += v;
+      });
+      notes.push("Les composants se revendent à un alchimiste ou un artisan, encore faut-il les prélever proprement (test d'INT ou de survie).");
+    }
+    if (sp.includes("encombrant")) notes.push("Une bonne part de ce butin est encombrante : charrette ou allers-retours à prévoir.");
+    if (trouv.length) log.push({ de: "", v: "", txt: trouv.length + " trouvaille(s) tirée(s) dans la liste de la source" });
+
+    const carteArgent = {
+      cat: "Argent et objets de valeur", nom: argent(Math.max(0, total)) + " au total", nm: null,
+      effets: lignes, trouvailles: trouv, notes, log, bourse: true, valeur: total,
+      source: src.nom, ampleur: S.ampleur[ampleur].label
+    };
+
+    /* objets magiques */
+    const m = src.magie, pm = S.magie[ampleur];
+    const fixe = Object.assign({}, src.origine || {}, src.origineAncienne ? { ancienne: true } : {});
+    const base = { niveau, cadre, poidsPerm: src.perm, poidsConso: src.conso, origine: fixe };
+    const rangs = [];
+    if (ampleur === "fin") { rangs.push(m >= 0.5 ? "majeur" : "mineur"); if (pct(pm.mineur * m)) rangs.push("mineur"); }
+    else if (ampleur === "repaire") { if (pct(pm.majeur * m)) rangs.push("majeur"); else if (pct(pm.mineur * m)) rangs.push("mineur"); }
+    else if (pct(pm.mineur * m * Math.min(2, 0.5 + n / 4))) rangs.push("mineur");
+    let nbConso = ampleur === "corps" ? (pct(0.2 * m * Math.min(2, 0.5 + n / 4)) ? 1 : 0)
+      : (ampleur === "fin" ? 1 : 0) + Math.floor(Math.random() * (1 + 2 * m));
+    log.push({ de: "", v: "", txt: rangs.length || nbConso
+      ? "magie : " + [rangs.length ? rangs.map(r => "objet " + r).join(", ") : "", nbConso ? nbConso + " consommable(s)" : ""].filter(Boolean).join(" et ")
+      : "pas d'objet magique cette fois" });
+    rangs.forEach(rang => { const o = objet(Object.assign({ rang }, base)); if (o) { o.req = Object.assign({ rang }, base); objets.push(o); } });
+    for (let i = 0; i < nbConso; i++) { const o = objet(Object.assign({ rang: "consommable" }, base)); if (o) { o.req = Object.assign({ rang: "consommable" }, base); objets.push(o); } }
+
+    return [carteArgent].concat(objets);
   }
 
   function effetSecondaire() {
@@ -358,5 +441,5 @@
     return { v: r.r.join(" + ") + " = " + r.s, txt: row[2] };
   }
 
-  window.MOTEUR = { objet, bourse, butin, origine: () => { const l = []; return origine(l); }, effetSecondaire, nmCible, argent, PERM, CONSO };
+  window.MOTEUR = { objet, rencontre, ncRencontre, SOURCES: window.SOURCES, origine: () => { const l = []; return origine(l); }, effetSecondaire, nmCible, argent, PERM, CONSO };
 })();
