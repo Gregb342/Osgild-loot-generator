@@ -220,3 +220,15 @@ select {
 .item-jet[hidden] { display: none; }
 .jet-out { margin: 0; font-size: .95rem; }
 .jet-out:empty { display: none; }
+
+/* histoire d'objet */
+.item-tech { margin: -.45rem 0 .6rem; color: var(--gris); font-size: .95rem; }
+.item-tech:empty, .item-candidat:empty, .lore-glose:empty { display: none; }
+.item-candidat { margin: -.2rem 0 .7rem; font-size: .9rem; color: var(--laiton); font-weight: 500; }
+.item-lore { margin: 0 0 .7rem; padding: .75rem .9rem; border-radius: 10px; background: var(--pierre); border: 1px solid var(--trait); }
+.item-lore[hidden] { display: none; }
+.item-lore p { margin: 0 0 .45rem; }
+.lore-glose { font-style: italic; color: var(--gris); font-size: .95rem; }
+.lore-txt { font: 400 1.05rem/1.55 var(--serif); }
+.item-lore .item-orig { font-size: .9rem; color: var(--gris); }
+.lore-actions, .foot-actions { display: flex; flex-wrap: wrap; gap: .4rem; }

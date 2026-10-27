@@ -124,8 +124,25 @@
     n.querySelector(".item-trouv").innerHTML = (o.trouvailles || []).map(e => `<li>${esc(e)}</li>`).join("");
     n.querySelector(".item-notes").innerHTML = (o.notes || []).map(e => `<li>${esc(e)}</li>`).join("");
     n.querySelector(".item-app").textContent = o.apparence || "";
-    if (o.origine) n.querySelector(".item-orig").innerHTML =
-      `<b>Origine :</b> ${esc(o.origine.provenance)}, ${esc(o.origine.epoque)}, ${esc(o.origine.peuple)}.`;
+    const permanent = !!o.origineFixe;
+    const btnH = n.querySelector(".histoire");
+    if (!permanent) btnH.remove();
+    if (o.lore) {
+      n.querySelector(".item-nom").textContent = o.lore.nom;
+      n.querySelector(".item-tech").textContent = o.nom;
+      n.querySelector(".item-lore").hidden = false;
+      n.querySelector(".lore-glose").textContent = o.lore.glose ? cap(o.lore.glose) + "." : "";
+      n.querySelector(".lore-txt").textContent = o.lore.legende.join(" ");
+      n.querySelector(".item-orig").innerHTML =
+        `<b>Origine (3d10) :</b> ${esc(o.lore.origine.provenance)}, ${esc(o.lore.origine.epoque)}, ${esc(o.lore.origine.peuple)}.`;
+      if (btnH) btnH.remove();
+      n.querySelector(".lore-version").addEventListener("click", () => majLore(idx, LORE.renommer(o, o.lore)));
+      n.querySelector(".lore-origine").addEventListener("click", () => majLore(idx, LORE.histoire(o)));
+      n.querySelector(".lore-retirer").addEventListener("click", () => majLore(idx, null));
+    } else {
+      if (o.candidat) n.querySelector(".item-candidat").textContent = "Objet marquant de cette aventure : il mérite peut-être une histoire.";
+      if (btnH) btnH.addEventListener("click", () => majLore(idx, LORE.histoire(o)));
+    }
     n.querySelector(".item-alerte").textContent = (o.alertes || []).join(" ");
     const valeur = n.querySelector(".item-val");
     if (o.bourse) n.querySelector(".item-foot").remove();
@@ -149,26 +166,43 @@
     $("#copier").hidden = false;
   }
 
+  function majLore(i, lore) {
+    if (lore) courant[i].lore = lore; else delete courant[i].lore;
+    sortie.classList.remove("nouveau");
+    sortie.children[i].replaceWith(carte(courant[i], i));
+    majEntree();
+  }
+
   function relancer(i) {
     const r = courant[i].req;
     const o = M.objet(r);
     if (!o) return;
     o.req = r;
+    if (courant[i].candidat) o.candidat = true;
     courant[i] = o;
     const old = sortie.children[i];
     const n = carte(o, i);
     sortie.classList.remove("nouveau");
     old.replaceWith(n);
-    sauver(courant, true);
+    majEntree();
   }
 
   /* ---------- historique ---------- */
-  function sauver(lot, remplace) {
+  let courantId = null;
+  function sauver(lot) {
     const h = store.get("histo", []);
-    const v = val();
-    const entree = { t: Date.now(), titre: resume(v), lot };
-    if (remplace && h.length) h[0] = entree; else h.unshift(entree);
+    courantId = Date.now();
+    h.unshift({ id: courantId, t: courantId, titre: resume(val()), lot });
     store.set("histo", h.slice(0, 20));
+    majHisto();
+  }
+  /* Met à jour l'entrée d'historique du butin affiché (relance, histoire) */
+  function majEntree() {
+    const h = store.get("histo", []);
+    const e = h.find(x => (x.id || x.t) === courantId);
+    if (!e) return;
+    e.lot = courant;
+    store.set("histo", h);
     majHisto();
   }
   function resume(v) {
@@ -199,7 +233,9 @@
     const b = e.target.closest("[data-h]");
     if (!b) return;
     const h = store.get("histo", []);
-    afficher(h[+b.dataset.h].lot, false);
+    const entree = h[+b.dataset.h];
+    afficher(entree.lot, false);
+    courantId = entree.id || entree.t;
     sortie.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
   });
 
@@ -214,13 +250,17 @@
   /* ---------- copier ---------- */
   function enTexte(lot) {
     return lot.map(o => {
-      const l = [`• ${o.nom} (${o.source ? o.source + ", " + o.ampleur.toLowerCase() : o.cat}${o.nm ? ", niveau de magie " + o.nm : ""})`];
+      const l = [`• ${o.lore ? o.lore.nom + ", " + o.nom : o.nom} (${o.source ? o.source + ", " + o.ampleur.toLowerCase() : o.cat}${o.nm ? ", niveau de magie " + o.nm : ""})`];
       o.effets.forEach(e => l.push("  - " + e));
       (o.equipement || []).forEach(r => l.push(`  - ${r.nom}${r.qte > 1 ? " × " + r.qte : ""} (${r.etatLabel})${r.stats ? " : " + r.stats : ""} ; valeur ${M.argent(r.prixU)}`));
       (o.trouvailles || []).forEach(e => l.push("  - " + e));
       (o.notes || []).forEach(e => l.push("  ! " + e));
       if (o.apparence) l.push("  Description : " + o.apparence);
-      if (o.origine) l.push(`  Origine : ${o.origine.provenance}, ${o.origine.epoque}, ${o.origine.peuple}`);
+      if (o.lore) {
+        if (o.lore.glose) l.push("  " + cap(o.lore.glose));
+        l.push("  Légende : " + o.lore.legende.join(" "));
+        l.push(`  Origine : ${o.lore.origine.provenance}, ${o.lore.origine.epoque}, ${o.lore.origine.peuple}`);
+      }
       if (o.valeur && !o.bourse) l.push("  Valeur : " + M.argent(o.valeur));
       return l.join("\n");
     }).join("\n\n");
@@ -240,10 +280,6 @@
   }
 
   /* ---------- petits jets ---------- */
-  $("#t-origine").addEventListener("click", () => {
-    const o = M.origine();
-    $("#o-origine").innerHTML = `<b>Provenance :</b> ${esc(o.provenance)}<br><b>Époque :</b> ${esc(o.epoque)}<br><b>Peuple :</b> ${esc(o.peuple)}`;
-  });
 
   function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
   function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }

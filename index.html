@@ -121,16 +121,6 @@
         <p class="vide">Choisis le niveau et ce que tu veux tirer, puis lance les dés.</p>
       </div>
 
-      <details class="tools">
-        <summary>Petits jets utiles</summary>
-        <div class="tools-body">
-          <div>
-            <button type="button" class="ghost" id="t-origine">Origine d'un objet (3d10)</button>
-            <p class="tool-out" id="o-origine"></p>
-          </div>
-        </div>
-      </details>
-
       <details class="tools" id="historique">
         <summary>Butins précédents</summary>
         <ol class="histo" id="histo"></ol>
@@ -150,12 +140,23 @@
     <div class="item-body">
       <p class="item-cat"></p>
       <h3 class="item-nom"></h3>
+      <p class="item-tech"></p>
+      <p class="item-candidat"></p>
       <ul class="item-effets"></ul>
       <ul class="item-equip"></ul>
       <ul class="item-legende"></ul>
       <ul class="item-trouv"></ul>
       <p class="item-app"></p>
-      <p class="item-orig"></p>
+      <div class="item-lore" hidden>
+        <p class="lore-glose"></p>
+        <p class="lore-txt"></p>
+        <p class="item-orig"></p>
+        <div class="lore-actions">
+          <button type="button" class="ghost small lore-version">Autre nom et légende</button>
+          <button type="button" class="ghost small lore-origine">Autre origine</button>
+          <button type="button" class="ghost small lore-retirer">Retirer l'histoire</button>
+        </div>
+      </div>
       <div class="item-jet" hidden>
         <p class="aide">Si le buveur a déjà une potion active et rate son test de CON (difficulté 10, puis 15, 20…) :</p>
         <button type="button" class="ghost small jet-effet">Effet secondaire (2d6)</button>
@@ -166,7 +167,10 @@
       <p class="item-alerte"></p>
       <div class="item-foot">
         <p class="item-val"></p>
-        <button type="button" class="ghost small relancer">Relancer</button>
+        <div class="foot-actions">
+          <button type="button" class="ghost small histoire">Lui donner une histoire</button>
+          <button type="button" class="ghost small relancer">Relancer</button>
+        </div>
       </div>
       <details class="jets">
         <summary>Jets de dés</summary>
@@ -183,6 +187,7 @@
 <script src="js/filtres.js"></script>
 <script src="js/equipement.js"></script>
 <script src="js/engine.js"></script>
+<script src="js/lore.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>

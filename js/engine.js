@@ -167,7 +167,8 @@
       if (a.sup) { log.push({ de: "", v: "", txt: "effet doublé : " + a.sup.n }); out.push({ ...a.sup }); }
       else {
         log.push({ de: "", v: "", txt: "effet doublé : " + a.n });
-        out.push({ ...a, n: a.n + " (doublée)", c: a.c * 2, e: a.e.replace("+1d4°", "+2d4°").replace(" X ", " 2X "), dbl: true });
+        const intense = /^fléau/.test(a.n) ? "grand " + a.n : /^(affûtée|mobile)$/.test(a.n) ? "très " + a.n : a.n + " intense";
+        out.push({ ...a, n: intense, c: a.c * 2, e: a.e.replace("+1d4°", "+2d4°").replace(" X ", " 2X "), dbl: true });
       }
     }
     return out;
@@ -186,7 +187,14 @@
         valeur: valeurNM(nm), apparence: descObjet()
       };
     }
-    const base = roll(log, 20, type === "contact" ? T.armesContact : T.armesDistance, "arme").row;
+    let base = roll(log, 20, type === "contact" ? T.armesContact : T.armesDistance, "arme").row;
+    if (/^Autre arme/.test(base[2])) {
+      const autres = type === "contact" ? ["Épieu", "Fléau", "Fléau à deux mains", "Marteau", "Pique", "Lance", "Stylet", "Gourdin"]
+        : ["Arc long", "Couteaux de lancer", "Arbalète lourde", "Arbalète de poing", "Javelot"];
+      const choix = any(autres);
+      log.push({ de: "", v: "", txt: "« autre arme » : " + choix.toLowerCase() + ", tirée parmi les armes absentes de la table" });
+      base = [0, 0, choix];
+    }
     const props = proprietes(log, T.proprietesArme, nm);
     const cout = props.reduce((a, p) => a + p.c, 0);
     const bonus = Math.max(1, nm - cout);
@@ -368,7 +376,7 @@
     it.log = log;
     it.cible = cible;
     it.alertes = alertes;
-    if (!it.consommable && it.nm > 0) it.origine = origine(log, opts.origine);
+    if (!it.consommable && it.nm > 0) it.origineFixe = opts.origine || {};
     return it;
   }
 
@@ -605,7 +613,13 @@
     log.push({ de: "", v: "", txt: rangs.length || nbConso
       ? "magie : " + [rangs.length ? rangs.map(r => "objet " + r).join(", ") : "", nbConso ? nbConso + " consommable(s)" : ""].filter(Boolean).join(" et ")
       : "pas d'objet magique cette fois" });
-    rangs.forEach(rang => { const o = objet(Object.assign({ rang }, base)); if (o) { o.req = Object.assign({ rang }, base); objets.push(o); } });
+    rangs.forEach((rang, i) => {
+      const o = objet(Object.assign({ rang }, base));
+      if (!o) return;
+      o.req = Object.assign({ rang }, base);
+      if (ampleur === "fin" && i === 0 && rang === "majeur" && o.nm > 0 && !o.consommable) o.candidat = true;
+      objets.push(o);
+    });
     for (let i = 0; i < nbConso; i++) { const o = objet(Object.assign({ rang: "consommable" }, base)); if (o) { o.req = Object.assign({ rang: "consommable" }, base); objets.push(o); } }
 
     return [carteArgent].concat(carteEquip ? [carteEquip] : [], objets);
@@ -616,5 +630,5 @@
     return { v: r.r.join(" + ") + " = " + r.s, txt: row[2] };
   }
 
-  window.MOTEUR = { objet, rencontre, ncRencontre, SOURCES: window.SOURCES, origine: () => { const l = []; return origine(l); }, effetSecondaire, nmCible, argent, PERM, CONSO };
+  window.MOTEUR = { objet, rencontre, ncRencontre, SOURCES: window.SOURCES, origine: fixe => { const l = []; return origine(l, fixe); }, effetSecondaire, nmCible, argent, PERM, CONSO };
 })();
