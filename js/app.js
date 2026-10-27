@@ -134,7 +134,7 @@
     n.querySelector(".item-rappel").textContent = (o.rappel || []).join(" ");
     n.querySelector(".item-trouv").innerHTML = (o.trouvailles || []).map(e => `<li>${esc(e)}</li>`).join("");
     n.querySelector(".item-notes").innerHTML = (o.notes || []).map(e => `<li>${esc(e)}</li>`).join("");
-    n.querySelector(".item-app").textContent = o.apparence || "";
+    n.querySelector(".item-app").textContent = (o.lore && o.lore.apparence) || o.apparence || "";
     const permanent = !!o.origineFixe;
     const btnH = n.querySelector(".histoire");
     if (!permanent) btnH.remove();

@@ -149,34 +149,134 @@
     };
   };
 
-  function proprietes(log, table, nm) {
-    const out = [], test = d(6);
-    log.push({ de: "d6", v: test, txt: test < nm ? "inférieur au niveau de magie : propriété spéciale" : "pas de propriété spéciale" });
-    if (test >= nm) return out;
+  /* ---------- propriétés des armes et armures ----------
+     Livre : 1d6 inférieur au niveau de magie → propriété (d12) ; sur 11-12
+     (armes) ou 12 (armures) : deux propriétés, effet doublé, ou spécial
+     (l'objet accorde une capacité). Règles maison ajoutées :
+     - les propriétés se paient sur le niveau de magie, le bonus reste ≥ 1 ;
+     - pour un objet majeur, si le d6 échoue, 1 chance sur 2 d'avoir quand
+       même une propriété plutôt qu'un bonus nu ;
+     - en fin d'aventure, la propriété est garantie. */
+  const VOIES_SPECIALES = {
+    arme: { Guerrier: ["voie du combat", "voie du maître d’armes"], Barbare: ["voie de la brute", "voie du pourfendeur", "voie de la rage"],
+      Chevalier: ["voie de la guerre", "voie du héros"], Voleur: ["voie de l’assassin", "voie du spadassin"], Barde: ["voie de l’escrime"],
+      Rôdeur: ["voie du traqueur", "voie du combat à deux armes"], Moine: ["voie du poing", "voie de la maîtrise"] },
+    distance: { Rôdeur: ["voie de l’archer", "voie du traqueur"], Arquebusier: ["voie de la précision", "voie du pistolero"], Voleur: ["voie de l’assassin"] },
+    // pour les protections : liste fermée de capacités défensives, cherchées dans toutes les voies
+    defense: ["Parer un coup", "Défense au bouclier", "Absorber un sort", "Renvoi de sort", "Protéger un allié", "Peau de pierre",
+      "Peau d’acier", "Armure de vent", "Résistance à la magie", "Vigilance", "Encaisser un coup", "Ignorer la douleur",
+      "Piqûres d’insectes", "Image décalée", "Déphasage", "Cercle de protection", "Armure du mana", "Chute ralentie",
+      "Esquive de la magie", "Réflexes félins", "Acrobaties", "Esquive fatale", "Peau d’écorce", "Peau de fer",
+      "Parade de projectiles", "Invulnérable", "Bouclier de la foi", "Vêtements sacrés", "Sanctuaire", "Forme éthérée",
+      "Interruption du temps", "Mon armure est une arme", "Liberté d’action", "Esquive acrobatique"]
+  };
+  function capaciteSpeciale(log, genreObj, budget, profils) {
+    const table = VOIES_SPECIALES[genreObj];
+    const max = Math.min(5, budget);
+    const cand = [];
+    if (Array.isArray(table)) {
+      const noms = new Set(table.map(norm));
+      Object.entries(V).forEach(([p, vs]) => Object.entries(vs).forEach(([nv, caps]) => caps.forEach((c, i) => {
+        const r = i + 1;
+        if (noms.has(norm(c[0])) && r <= max) cand.push({ p, v: nv, c, r, w: (profils && profils[p] ? 3 : 1) * (r >= Math.ceil(max / 2) ? 2 : 1) });
+      })));
+    }
+    else Object.entries(table).forEach(([p, vs]) => vs.forEach(nv => {
+      const v = voie(p, nv);
+      if (!v) return;
+      v.caps.forEach((c, i) => {
+        const r = i + 1;
+        if (r <= max && r >= Math.ceil(max / 2) && objectable(c) && !/héroïque/i.test(c[0]))
+          cand.push({ p, v: v.nom, c, r, w: profils && profils[p] ? 3 : 1 });
+      });
+    }));
+    if (!cand.length) return null;
+    const w = {}; cand.forEach((x, i) => { w[i] = x.w; });
+    const x = cand[+pickW(w)];
+    log.push({ de: "", v: "", txt: "spécial : l'objet accorde " + x.c[0] + " (rang " + x.r + ", " + x.p + ")" });
+    return {
+      n: "(" + x.c[0] + ")", c: x.r, speciale: true,
+      ligne: "Capacité spéciale : accorde " + x.c[0] + " (rang " + x.r + ", " + joliVoie(x.v) + ", " + x.p + ") à son porteur, comme s'il la possédait ; si elle est limitée en usages, 1 fois par jour."
+    };
+  }
+
+  function proprietes(log, table, nm, opts) {
+    opts = opts || {};
+    const out = [], budget = nm - 1;
+    const test = d(6);
+    let ok = test < nm;
+    log.push({ de: "d6", v: test, txt: ok ? "inférieur au niveau de magie : propriété spéciale" : "pas de propriété spéciale selon le livre" });
+    if (!ok && opts.garantie && budget >= 1) { ok = true; log.push({ de: "", v: "", txt: "propriété garantie : récompense de fin d'aventure" }); }
+    if (!ok && opts.majeur && budget >= 1 && d(2) === 1) { ok = true; log.push({ de: "d2", v: 1, txt: "objet majeur : une propriété plutôt qu'un bonus nu" }); }
+    if (!ok || budget < 1) {
+      if (ok) log.push({ de: "", v: "", txt: "niveau de magie trop bas pour payer une propriété" });
+      return out;
+    }
+    const simples = table.filter(x => x[2].n !== "double").map(x => x[2]);
+    const abordables = simples.filter(p => p.c <= budget);
+    if (opts.garantie && d(3) === 1) {
+      const sp = capaciteSpeciale(log, opts.genre, budget, opts.profils);
+      if (sp) { out.push(sp); return out; }
+    }
     const r = roll(log, 12, table, "propriété").res;
-    if (r.n !== "double") { out.push({ ...r }); return out; }
-    const deux = d(2) === 1;
-    const simples = table.filter(x => x[2].n !== "double");
-    if (deux) {
-      const a = any(simples)[2]; let b = any(simples)[2];
-      while (b.n === a.n) b = any(simples)[2];
-      log.push({ de: "", v: "", txt: "deux propriétés : " + a.n + " et " + b.n });
-      out.push({ ...a }, { ...b });
-    } else {
-      const a = any(simples)[2];
-      if (a.sup) { log.push({ de: "", v: "", txt: "effet doublé : " + a.sup.n }); out.push({ ...a.sup }); }
-      else {
-        log.push({ de: "", v: "", txt: "effet doublé : " + a.n });
-        const intense = /^fléau/.test(a.n) ? "grand " + a.n : /^(affûtée|mobile)$/.test(a.n) ? "très " + a.n : a.n + " intense";
-        out.push({ ...a, n: intense, c: a.c * 2, e: a.e.replace("+1d4°", "+2d4°").replace(" X ", " 2X "), dbl: true });
+    if (r.n !== "double") {
+      if (r.c <= budget) { out.push({ ...r }); return out; }
+      const p = any(abordables);
+      log.push({ de: "", v: "", txt: r.n + " coûte trop cher pour ce niveau de magie : " + p.n + " à la place" });
+      out.push({ ...p });
+      return out;
+    }
+    const mode = d(3);
+    log.push({ de: "d3", v: mode, txt: ["deux propriétés", "effet doublé", "spécial : une capacité"][mode - 1] });
+    if (mode === 3) {
+      const sp = capaciteSpeciale(log, opts.genre, budget, opts.profils);
+      if (sp) { out.push(sp); return out; }
+    }
+    if (mode === 1) {
+      const a = any(abordables);
+      const reste = simples.filter(p => p.n !== a.n && p.c <= budget - a.c);
+      if (reste.length) {
+        const b = any(reste);
+        log.push({ de: "", v: "", txt: "deux propriétés : " + a.n + " et " + b.n });
+        out.push({ ...a }, { ...b });
+        return out;
       }
     }
+    const dbl = simples.filter(p => (p.sup ? p.sup.c : p.c * 2) <= budget);
+    if (dbl.length) {
+      const a = any(dbl);
+      if (a.sup) { log.push({ de: "", v: "", txt: "effet doublé : " + a.sup.n }); out.push({ ...a.sup }); return out; }
+      log.push({ de: "", v: "", txt: "effet doublé : " + a.n });
+      const intense = /^fléau/.test(a.n) ? "grand " + a.n : /^(affûtée|mobile)$/.test(a.n) ? "très " + a.n : a.n + " intense";
+      out.push({ ...a, n: intense, c: a.c * 2, e: a.e.replace("+1d4°", "+2d4°").replace(" X ", " 2X "), dbl: true });
+      return out;
+    }
+    const p = any(abordables);
+    log.push({ de: "", v: "", txt: "budget trop juste : une seule propriété, " + p.n });
+    out.push({ ...p });
     return out;
   }
 
+  /* Arme ou armure de base tirée dans l'équipement de la source (70 %), sinon table du livre */
+  function baseSource(log, kitNom, quoi) {
+    if (!kitNom || !E || !E.kits[kitNom] || d(10) > 7) return null;
+    const kit = E.kits[kitNom];
+    const pool = quoi === "arme" ? Object.assign({}, kit.armes, kit.distance || {})
+      : Object.assign({}, kit.armures, kit.bouclier ? (kit.boucliers || { "Petit bouclier": 1, "Grand bouclier": 1 }) : {});
+    if (!Object.keys(pool).length) return null;
+    const nom = pickW(pool);
+    log.push({ de: "", v: "", txt: (quoi === "arme" ? "arme" : "protection") + " de base tirée dans l'équipement de la source : " + nom.toLowerCase() });
+    return nom;
+  }
+  const lanceurDans = profils => !!profils && Object.keys(profils).some(p => ["Ensorceleur", "Magicien", "Sorcier", "Forgesort", "Druide", "Prêtre"].includes(p));
+
   G.arme = function (ctx, log) {
     const nm = Math.max(1, ctx.nm);
-    const type = roll(log, 6, T.typeArme, "type d'arme").res;
+    let type = roll(log, 6, T.typeArme, "type d'arme").res;
+    if (type === "sceptre" && ctx.profils && !lanceurDans(ctx.profils)) {
+      type = "contact";
+      log.push({ de: "", v: "", txt: "pas de lanceur de sorts dans cette source : arme de contact plutôt qu'un sceptre" });
+    }
     if (type === "sceptre") {
       const forme = any(["bâton ferré", "baguette d'ébène", "anneau de puissance", "orbe de cristal", "couronne de fer", "sceptre d'os"]);
       const ecole = any(["tous les sorts", "les sorts de feu", "les sorts de froid", "les sorts de foudre", "les sorts de la voie de l'invocation", "les sorts de nécromancie"]);
@@ -187,41 +287,53 @@
         valeur: valeurNM(nm), apparence: descObjet()
       };
     }
-    let base = roll(log, 20, type === "contact" ? T.armesContact : T.armesDistance, "arme").row;
-    if (/^Autre arme/.test(base[2])) {
-      const autres = type === "contact" ? ["Épieu", "Fléau", "Fléau à deux mains", "Marteau", "Pique", "Lance", "Stylet", "Gourdin"]
-        : ["Arc long", "Couteaux de lancer", "Arbalète lourde", "Arbalète de poing", "Javelot"];
-      const choix = any(autres);
-      log.push({ de: "", v: "", txt: "« autre arme » : " + choix.toLowerCase() + ", tirée parmi les armes absentes de la table" });
-      base = [0, 0, choix];
+    const tableArmes = type === "contact" ? T.armesContact : T.armesDistance;
+    let base;
+    const src = baseSource(log, ctx.kit, "arme");
+    if (src) base = [0, 0, src];
+    else {
+      base = roll(log, 20, tableArmes, "arme").row;
+      if (base[3] && ctx.rang !== "consommable") {
+        const sans = tableArmes.filter(r => !r[3] && !/^Autre/.test(r[2]));
+        base = any(sans);
+        log.push({ de: "", v: "", txt: "des munitions ne font pas un objet permanent : " + base[2].toLowerCase() + " à la place" });
+      }
+      if (/^Autre arme/.test(base[2])) {
+        const autres = type === "contact" ? ["Épieu", "Fléau", "Fléau à deux mains", "Marteau", "Pique", "Lance", "Stylet", "Gourdin"]
+          : ["Arc long", "Couteaux de lancer", "Arbalète lourde", "Arbalète de poing", "Javelot"];
+        const choix = any(autres);
+        log.push({ de: "", v: "", txt: "« autre arme » : " + choix.toLowerCase() + ", tirée parmi les armes absentes de la table" });
+        base = [0, 0, choix];
+      }
     }
-    const props = proprietes(log, T.proprietesArme, nm);
+    const cb = cat_(base[2]);
+    const distance = cb && cb.arme && !!cb.a.portee && !/se lance/.test(cb.a.notes || "");
+    const props = proprietes(log, T.proprietesArme, nm, { majeur: ctx.rang === "majeur", garantie: ctx.garantie, genre: distance ? "distance" : "arme", profils: ctx.profils });
     const cout = props.reduce((a, p) => a + p.c, 0);
     const bonus = Math.max(1, nm - cout);
     const total = bonus + cout;
     let nom = base[2] + " +" + bonus + (props.length ? " " + props.map(p => p.n).join(" et ") : "");
     if (base[3]) { const q = d(12); log.push({ de: "d12", v: q, txt: "quantité de projectiles" }); nom = q + " " + nom.toLowerCase(); }
-    const cb = cat_(base[2]);
     const lignesBase = cb && cb.arme ? ["Arme de base : " + statsArme(cb.a, "bon") + "."] : [];
     return {
       cat: "Arme magique", nom, nm: total,
-      effets: lignesBase.concat(["+" + bonus + " en attaque et aux DM."]).concat(props.map(p => cap(p.n.replace(/^(de |d')/, "")) + " : " + p.e + ".")),
+      effets: lignesBase.concat(["+" + bonus + " en attaque et aux DM."]).concat(props.map(p => p.ligne || (cap(p.n.replace(/^(de |d')/, "")) + " : " + p.e + "."))),
       valeur: valeurNM(total), apparence: descObjet(), consommable: !!base[3]
     };
   };
 
   G.defense = function (ctx, log) {
     const nm = Math.max(1, ctx.nm);
-    const base = roll(log, 20, T.armures, "objet de défense").res;
-    const props = proprietes(log, T.proprietesArmure, nm);
+    const base = baseSource(log, ctx.kit, "defense") || roll(log, 20, T.armures, "objet de défense").res;
+    const props = proprietes(log, T.proprietesArmure, nm, { majeur: ctx.rang === "majeur", garantie: ctx.garantie, genre: "defense", profils: ctx.profils });
     const cout = props.reduce((a, p) => a + p.c, 0);
     const bonus = Math.max(1, nm - cout);
     const total = bonus + cout;
     const cb = cat_(base);
     const effets = cb && !cb.arme ? [statsArmure(cb.a, "bon", bonus) + "."] : [];
     effets.push("+" + bonus + " en DEF (un seul bonus magique de DEF compte).");
-    if (/Armure|mailles|plaque|cuir/i.test(base)) effets.push("Réduit aussi ses pénalités de " + bonus + ".");
-    props.forEach(p => effets.push(cap(p.n.replace(/^(de |d')/, "")) + " : " + p.e.replace(/ 2X /, " 10 ").replace(/ X /, " 5 ") + "."));
+    if (/Armure|mailles|plaque|cuir|Cuir|broigne|Tissus/i.test(base)) effets.push("Réduit aussi ses pénalités de " + bonus + ".");
+    props.forEach(p => effets.push(p.ligne || (cap(p.n.replace(/^(de |d')/, "")) + " : " + p.e.replace(/ 2X /, " 10 ").replace(/ X /, " 5 ") + ".")));
     return {
       cat: "Objet de défense", nom: base + " +" + bonus + (props.length ? " " + props.map(p => p.n).join(" et ") : ""), nm: total,
       effets, valeur: valeurNM(total), apparence: descObjet()
@@ -236,34 +348,49 @@
     return k ? any(F.formes[k]) : null;
   }
 
-  G.pouvoir = function (ctx, log) {
-    const nm = Math.max(1, ctx.nm);
-    let rang = roll(log, 8, T.rangPouvoir, "rang du pouvoir").res;
-    if (rang > Math.min(5, nm)) { log.push({ de: "", v: "", txt: "plafonné au rang " + Math.min(5, nm) + " (niveau de magie visé)" }); rang = Math.min(5, nm); }
+  function unPouvoir(ctx, log, rang) {
     let profil, choix = null;
     for (let essai = 0; essai < 20 && !choix; essai++) {
       if (ctx.profils) {
         profil = pickW(ctx.profils);
         log.push({ de: "", v: "", txt: "profil du pouvoir, parmi ceux qui conviennent à la source : " + profil });
       } else profil = roll(log, 20, T.profilPouvoir, "profil du pouvoir").res;
-      // capacités du profil reproductibles par un objet, au rang voulu ou en dessous
       for (let r = rang; r >= 1 && !choix; r--) {
         const ok = Object.entries(V[profil]).filter(([, c]) => objectable(c[r - 1]));
-        if (ok.length) { const [v, c] = any(ok); choix = { v, capa: c[r - 1], r }; }
+        if (ok.length) { const [v, c] = any(ok); choix = { v, capa: c[r - 1], r, profil }; }
       }
       if (!choix) log.push({ de: "", v: "", txt: "rien dans ce profil ne se prête à un objet à ce rang : on relance" });
     }
-    if (!choix) return null;
-    if (choix.r < rang) log.push({ de: "", v: "", txt: "aucune capacité de rang " + rang + " ne se prête à un objet : rang " + choix.r });
-    const ecartees = Object.values(V[profil]).filter(c => !objectable(c[rang - 1])).length;
-    if (ecartees) log.push({ de: "", v: "", txt: ecartees + " capacité(s) écartée(s) car elles ne se prêtent pas à un objet" });
-    const forme = formeVoie(choix.v);
+    if (choix && choix.r < rang) log.push({ de: "", v: "", txt: "aucune capacité de rang " + rang + " ne se prête à un objet : rang " + choix.r });
+    return choix;
+  }
+
+  G.pouvoir = function (ctx, log) {
+    const nm = Math.max(1, ctx.nm);
+    let rang;
+    if (ctx.rang === "majeur") {
+      rang = Math.min(5, nm);
+      log.push({ de: "", v: "", txt: "objet majeur : pouvoir de rang " + rang + " (niveau de magie visé " + nm + ")" });
+    } else {
+      rang = roll(log, 8, T.rangPouvoir, "rang du pouvoir").res;
+      if (rang > Math.min(5, nm)) { log.push({ de: "", v: "", txt: "plafonné au rang " + Math.min(5, nm) + " (niveau de magie visé)" }); rang = Math.min(5, nm); }
+    }
+    const p1 = unPouvoir(ctx, log, rang);
+    if (!p1) return null;
+    const pouvoirs = [p1];
+    // Le livre : le niveau de magie d'un objet à plusieurs pouvoirs est la somme de leurs rangs
+    if (ctx.rang === "majeur" && nm - p1.r >= 1) {
+      const p2 = unPouvoir({ profils: { [p1.profil]: 1 } }, log, Math.min(5, nm - p1.r));
+      if (p2 && p2.capa[0] !== p1.capa[0]) { pouvoirs.push(p2); log.push({ de: "", v: "", txt: "second pouvoir pour atteindre le niveau de magie : " + p2.capa[0] }); }
+    }
+    const total = pouvoirs.reduce((a, p) => a + p.r, 0);
+    const forme = formeVoie(p1.v);
     const nomForme = forme ? cap(forme) : "Objet de pouvoir";
     return {
-      cat: "Objet de pouvoir", nom: nomForme + " : " + choix.capa[0], nm: choix.r,
-      effets: ["Reproduit " + choix.capa[0] + " (rang " + choix.r + ", " + joliVoie(choix.v) + ", " + profil + ").",
-        "En général une fois par jour ; activation : action gratuite, ou d'attaque pour un pouvoir offensif."],
-      valeur: valeurNM(choix.r), apparence: descObjet()
+      cat: "Objet de pouvoir", nom: nomForme + " : " + pouvoirs.map(p => p.capa[0]).join(" et "), nm: total,
+      effets: pouvoirs.map(p => "Reproduit " + p.capa[0] + " (rang " + p.r + ", " + joliVoie(p.v) + ", " + p.profil + ").")
+        .concat(["En général une fois par jour chacun ; activation : action gratuite, ou d'attaque pour un pouvoir offensif."]),
+      valeur: valeurNM(total), apparence: descObjet()
     };
   };
 
@@ -338,10 +465,19 @@
 
   G.baguette = function (ctx, log) {
     const type = ctx.nm <= 2 ? "mineur" : "moyen";
-    const s = tirerSort(log, type, ctx.profils);
+    let s = tirerSort(log, type, ctx.profils);
     if (!s) return null;
+    // objet majeur ou mineur : un sort du rang visé (une baguette chargée vaut le rang de son sort)
+    for (let k = 0; k < 12 && ctx.rang !== "consommable" && ctx.nm <= 5 && s.rang !== ctx.nm; k++) {
+      const t = tirerSort([], ctx.nm <= 2 ? "mineur" : "moyen", ctx.profils);
+      if (t && Math.abs(t.rang - ctx.nm) < Math.abs(s.rang - ctx.nm)) s = t;
+    }
     const ch = nd(2, 20);
     log.push({ de: "2d20", v: ch.r.join(" + ") + " = " + ch.s, txt: "charges" });
+    if (ctx.rang !== "consommable" && ch.s < 30 && Math.floor(s.rang / 2) < ctx.nm) {
+      ch.s = 29 + d(10);
+      log.push({ de: "", v: "", txt: "objet " + ctx.rang + " : chargée à " + ch.s + " pour atteindre le niveau de magie visé" });
+    }
     const nm = ch.s >= 30 ? s.rang : Math.floor(s.rang / 2);
     return {
       cat: "Baguette magique", nom: "Baguette : " + s.sort + " (" + ch.s + " charges)", nm,
@@ -365,13 +501,23 @@
       alertes.push("En cadre low fantasy, le livre ne prévoit pas d'objet magique à ce niveau : consommable tiré à la place.");
     }
     let nm = typeof cible === "number" ? cible : 0;
+    if (opts.bonusNM && nm > 0) {
+      nm += opts.bonusNM;
+      alertes.push("Un niveau de magie au-dessus de la recommandation du livre : récompense d'une fin d'aventure redoutable.");
+    }
     const veutPerm = cat !== "hasard" ? PERM.includes(cat) : (typeof cible === "number" && cible > 0);
-    if (cat === "hasard") cat = veutPerm ? pickW(opts.poidsPerm || M.poidsPermanents) : pickW(opts.poidsConso || M.poidsConsommables);
+    if (cat === "hasard") {
+      let poids = Object.assign({}, opts.poidsPerm || M.poidsPermanents);
+      // un objet majeur doit atteindre le niveau visé : pas d'objet de compétence (toujours niveau 1),
+      // ni de petit objet de puissance (PV, PM…) sous le niveau 3
+      if (rang === "majeur") { delete poids.competence; if (nm < 3) delete poids.puissance; }
+      cat = veutPerm ? pickW(poids) : pickW(opts.poidsConso || M.poidsConsommables);
+    }
     if (PERM.includes(cat) && nm < 1) {
       nm = 1;
       alertes.push("Au-dessus de la recommandation du livre pour ce niveau (consommables seulement).");
     }
-    const it = G[cat]({ niveau, cadre, nm, profils: opts.profils }, log);
+    const it = G[cat]({ niveau, cadre, nm, rang, profils: opts.profils, kit: opts.kit, garantie: opts.garantie }, log);
     if (!it) return null;
     it.log = log;
     it.cible = cible;
@@ -603,7 +749,9 @@
     /* objets magiques */
     const m = src.magie, pm = S.magie[ampleur];
     const fixe = Object.assign({}, src.origine || {}, src.origineAncienne ? { ancienne: true } : {});
-    const base = { niveau, cadre, poidsPerm: src.perm, poidsConso: src.conso, origine: fixe, profils: src.profils };
+    const kit = E && E.kitSource[src.id] ? E.kitSource[src.id].kit : null;
+    const base = { niveau, cadre, poidsPerm: src.perm, poidsConso: src.conso, origine: fixe, profils: src.profils, kit };
+    const redoutable = nc >= niveau + 2;
     const rangs = [];
     if (ampleur === "fin") { rangs.push(m >= 0.5 ? "majeur" : "mineur"); if (pct(pm.mineur * m)) rangs.push("mineur"); }
     else if (ampleur === "repaire") { if (pct(pm.majeur * m)) rangs.push("majeur"); else if (pct(pm.mineur * m)) rangs.push("mineur"); }
@@ -614,9 +762,11 @@
       ? "magie : " + [rangs.length ? rangs.map(r => "objet " + r).join(", ") : "", nbConso ? nbConso + " consommable(s)" : ""].filter(Boolean).join(" et ")
       : "pas d'objet magique cette fois" });
     rangs.forEach((rang, i) => {
-      const o = objet(Object.assign({ rang }, base));
+      const special = ampleur === "fin" && i === 0 && rang === "majeur";
+      const req = Object.assign({ rang }, base, special ? { garantie: true, bonusNM: redoutable ? 1 : 0 } : {});
+      const o = objet(req);
       if (!o) return;
-      o.req = Object.assign({ rang }, base);
+      o.req = req;
       if (ampleur === "fin" && i === 0 && rang === "majeur" && o.nm > 0 && !o.consommable) o.candidat = true;
       objets.push(o);
     });

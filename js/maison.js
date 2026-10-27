@@ -29,8 +29,8 @@ window.MAISON = {
     detail: [
       "des runes à demi effacées courent le long", "une pierre trouble y est sertie",
       "il porte la marque d'un artisan inconnu", "il est tiède au toucher, même dans le froid",
-      "une inscription en elfique ancien y est gravée", "il bourdonne doucement quand on l'approche de l'oreille",
-      "il est plus léger qu'il ne devrait", "un motif de dragon s'y enroule"
+      "de fines gravures en couvrent la surface", "il bourdonne doucement quand on l'approche de l'oreille",
+      "il est plus léger qu'il ne devrait", "un motif torsadé s'y enroule"
     ],
     parchemin: ["un rouleau de vélin noué d'un ruban noir", "une feuille pliée en quatre, scellée de cire verte", "un étui de cuir contenant un parchemin jauni", "un papyrus fragile couvert d'une écriture serrée"]
   }

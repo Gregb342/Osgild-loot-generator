@@ -19,6 +19,7 @@
 
   /* [motif de l'effet, évident ?, comment les PJ le découvrent, ce qu'ils voient] */
   const REGLES = [
+    [/^Capacité spéciale/, false, "Se révèle dans une situation où elle sert, comme une intuition du porteur, ou par identification.", null],
     [/^Arme de base/, true, "C'est une arme : ses caractéristiques de base se voient tout de suite.", null],
     [/en attaque et aux DM\./, false, "Se devine après quelques combats (les coups portent mieux), ou par identification.", null],
     [/^(Très )?[Aa]ffûtée/, false, "Se remarque sur un coup critique particulièrement dévastateur.", null],
@@ -162,7 +163,8 @@
       (item.trouvailles || []).forEach(t => l.push(t.replace(/ \([^)]*\)$/, "")));
       return l.join("\n");
     }
-    if (item.apparence) l.push(item.apparence);
+    const app = (item.lore && item.lore.apparence) || item.apparence;
+    if (app) l.push(app);
     perceptions(item).forEach(p => { if (p.joueur) l.push(p.joueur); });
     const base = (item.effets || []).find(e => /^Arme de base/.test(e));
     if (base) l.push(base.replace(/^Arme de base : /, ""));

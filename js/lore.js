@@ -90,18 +90,60 @@
   };
 
   /* Artisans : [participe, complément d'agent] */
-  const ARTISANS = { // [texte avec {e} pour l'accord, types d'objet admis (facultatif)]
-    "Humains": [["forgé{e} par un maître armurier", "arme defense"], ["commandé{e} par un seigneur pour son champion"], ["fabriqué{e} par un mage de cour", "objet"], ["enchanté{e} par un ordre de mages aujourd'hui disparu"]],
-    "Nains": [["forgé{e} dans les forges de Kaerimbor", "arme defense"], ["martelé{e} par un maître runique nain", "arme defense"], ["taillé{e} par un joaillier nain de Kaerimbor", "objet"], ["gravé{e} de runes par un maître runique nain", "objet"]],
-    "Elfes": [["façonné{e} par les artisans elfes"], ["chanté{e} plus que forgé{e} par un barde elfe"]],
-    "Gnomes": [["assemblé{e} par un inventeur gnome"], ["bricolé{e} par un artificier gnome de génie"]],
-    "Elfes noirs": [["façonné{e} dans une cité des profondeurs, pour une matrone"]],
-    "Orcs ou gobelins": [["arraché{e} à un ennemi puis refaçonné{e} par un chaman orque"]],
-    "Ange, démon, divinité": [["béni{e}, ou maudit{e}, par une puissance d'outre-monde"]],
-    "Dragons": [["imprégné{e} de la magie d'un dragon qui dormit des siècles dessus"]],
-    "Seigneur élémentaire": [["trempé{e} dans le souffle d'un seigneur élémentaire"]],
-    "Autre créature ancienne": [["fait{e} par une créature dont plus personne ne connaît le nom"]]
+  /* Artisans : [texte avec {e} pour l'accord, types d'objet admis, palier min, palier max].
+     Palier selon le niveau de magie : 1 modeste (NM 1-2), 2 notable (3-5), 3 légendaire (6+). */
+  const ARTISANS = {
+    "Humains": [["forgé{e} par l'armurier d'une garnison", "arme defense", 1, 1], ["fabriqué{e} par un enchanteur de passage", "", 1, 1],
+      ["forgé{e} par un maître armurier", "arme defense", 1, 3], ["fabriqué{e} par un mage de cour", "objet", 1, 3],
+      ["commandé{e} par un seigneur pour son champion", "", 2, 3], ["enchanté{e} par un ordre de mages aujourd'hui disparu", "", 2, 3]],
+    "Nains": [["forgé{e} par un forgeron nain de bonne réputation", "arme defense", 1, 1], ["taillé{e} par un joaillier nain", "objet", 1, 1],
+      ["forgé{e} dans les forges de Kaerimbor", "arme defense", 2, 3], ["martelé{e} par un maître runique nain", "arme defense", 2, 3],
+      ["taillé{e} par un joaillier nain de Kaerimbor", "objet", 2, 3], ["gravé{e} de runes par un maître runique nain", "objet", 2, 3]],
+    "Elfes": [["fabriqué{e} par un artisan elfe pour un ami humain", "", 1, 1], ["façonné{e} par les artisans elfes", "", 1, 3], ["chanté{e} plus que forgé{e} par un barde elfe", "", 2, 3]],
+    "Gnomes": [["assemblé{e} par un inventeur gnome", "", 1, 3], ["bricolé{e} par un artificier gnome de génie", "", 1, 3]],
+    "Elfes noirs": [["façonné{e} par un artisan des profondeurs", "", 1, 2], ["façonné{e} dans une cité des profondeurs, pour une matrone", "", 2, 3]],
+    "Orcs ou gobelins": [["bricolé{e} par un chaman gobelin à partir d'un butin volé", "", 1, 1], ["arraché{e} à un ennemi puis refaçonné{e} par un chaman orque", "", 1, 3]],
+    "Ange, démon, divinité": [["béni{e} par un prêtre de village, avec plus de foi que de science", "", 1, 1], ["béni{e}, ou maudit{e}, par une puissance d'outre-monde", "", 2, 3]],
+    "Dragons": [["laissé{e} des années sur le trésor d'un jeune dragon, qui l'a imprégné{e} de sa magie", "", 1, 2], ["imprégné{e} de la magie d'un dragon qui dormit des siècles dessus", "", 2, 3]],
+    "Seigneur élémentaire": [["trempé{e} dans une source où affleure un plan élémentaire", "", 1, 2], ["trempé{e} dans le souffle d'un seigneur élémentaire", "", 2, 3]],
+    "Autre créature ancienne": [["fait{e} par une créature dont plus personne ne connaît le nom", "", 1, 3]]
   };
+  /* Paliers minimaux des parcours et accroches (les autres sont de palier 1) */
+  const PALIER_TEXTE = {
+    "On l'a enterré{e} avec son propriétaire, et {il} n'est pas resté{e} dans la tombe": 2,
+    "{Il} a dormi des générations au fond d'un coffre que personne n'osait ouvrir": 2,
+    "{Il} a été jeté{e} dans un fleuve pour conjurer une malédiction, et repêché{e} des années plus tard": 2,
+    "Un ordre de chevalerie l'a gardé{e} sous scellés pendant un siècle": 2,
+    "{Il} est passé{e} de la ceinture d'un héros à celle de son assassin": 2,
+    "Un roitelet l'a offert{e} à un allié, qui l'a trahi le lendemain": 2,
+    "{Il} est resté{e} des siècles sous le ventre d'un dragon endormi": 3,
+    "Personne ne sait comment {il} est arrivé{e} jusqu'ici, et ceux qui ont cherché ont cessé d'en parler": 2,
+    "La nuit, {il} murmure parfois dans une langue morte.": 2,
+    "Une vieille prophétie parle {de lui}, sans qu'on sache si c'est un bon présage.": 3,
+    "Son porteur fait parfois des rêves qui ne sont pas les siens.": 2,
+    "Un culte {le} considère comme une relique qu'on lui a volée.": 2,
+    "{Il} semble reconnaître certains lieux, et s'y fait plus lourd{e}.": 2,
+    "Un sage paierait cher pour l'étudier, et un autre pour qu'{il} disparaisse.": 2,
+    "Son ancien propriétaire n'est peut-être pas aussi mort qu'on le croit.": 2,
+    "{Il} se refroidit d'un coup quand un menteur s'approche.": 2,
+    "Un ennemi juré de son créateur vit encore, et n'a rien oublié.": 3,
+    "{Il} vibre faiblement à l'approche de son jumeau.": 2,
+    "Chaque année, la nuit de sa création, {il} se comporte étrangement.": 3,
+    "Une matrone des profondeurs a juré de {le} récupérer.": 3,
+    "Le dragon qui l'a couvé{e} n'est peut-être pas mort.": 3,
+    "Ceux qui l'étudient trop longtemps font tous le même cauchemar.": 2
+  };
+  /* Matières selon le peuple, pour une description cohérente avec l'origine */
+  const MATIERES = {
+    "Humains": ["acier poli", "bronze patiné", "fer noirci"], "Nains": ["acier sombre martelé", "fer gris d'une densité étonnante", "bronze clair"],
+    "Elfes": ["argent pâle", "bois clair poli comme de l'os", "acier fin, presque blanc"], "Gnomes": ["cuivre et laiton", "laiton ciselé"],
+    "Elfes noirs": ["métal noir", "obsidienne et argent noirci"], "Orcs ou gobelins": ["fer brut", "os et fer rivetés"],
+    "Ange, démon, divinité": ["or blanc", "acier patiné d'or", "fer rougi qui ne refroidit jamais"], "Dragons": ["acier écaillé", "or terni"],
+    "Seigneur élémentaire": ["pierre veinée", "cristal fumé", "bronze verdi"], "Autre créature ancienne": ["une matière sombre et froide", "pierre lisse et grasse au toucher"]
+  };
+  const DETAILS = ["il est tiède au toucher, même dans le froid", "il est plus léger qu'il ne devrait", "de fines gravures en couvrent la surface",
+    "il bourdonne doucement quand on l'approche de l'oreille", "une pierre trouble y est sertie", "aucune trace d'usure, malgré son âge évident"];
+
   /* Parcours et accroches : [texte, peuples concernés (facultatif)].
      {Il}/{il}/{le}/{e}/{de lui} s'accordent au genre du nom. */
   const VOYAGES = [
@@ -205,7 +247,8 @@
     }
     const [deb, fin, langue] = SYLLABES[origine.peuple];
     let propre;
-    do { propre = any(deb) + any(fin); } while (INTERDITS.has(propre) || /(.)\1\1/.test(propre));
+    let a, b;
+    do { a = any(deb); b = any(fin); propre = a + b; } while (INTERDITS.has(propre) || /(.)\1\1/.test(propre) || a.toLowerCase() === b.toLowerCase());
     return { nom: propre, glose: "« " + noyau + " " + de(mot.toLowerCase()) + " » " + langue, g };
   }
 
@@ -216,21 +259,23 @@
   }
 
   /* Choisit dans une liste en privilégiant le peuple et en évitant ce qui a déjà servi */
-  function choisir(liste, peuple, deja) {
-    const ok = liste.filter(x => !x[1] || x[1] === peuple);
+  function palier(item) { const nm = item.nm || 1; return nm <= 2 ? 1 : nm <= 5 ? 2 : 3; }
+  function choisir(liste, peuple, deja, niv) {
+    let ok = liste.filter(x => (!x[1] || x[1] === peuple) && (PALIER_TEXTE[x[0]] || 1) <= niv);
+    if (niv === 3 && Math.random() < 0.6) { const forts = ok.filter(x => (PALIER_TEXTE[x[0]] || 1) >= 2); if (forts.length) ok = forts; }
     const propres = ok.filter(x => x[1] === peuple);
     const pool = propres.length && Math.random() < 0.4 ? propres : ok;
     const libres = pool.filter(x => !deja.has(x[0]));
     return any(libres.length ? libres : pool)[0];
   }
 
-  function legende(origine, g, type, exclus) {
+  function legende(origine, g, type, exclus, niv) {
     const f = g === "f";
-    const liste = (ARTISANS[origine.peuple] || ARTISANS["Humains"]).filter(a => !a[1] || a[1].includes(type));
+    const liste = (ARTISANS[origine.peuple] || ARTISANS["Humains"]).filter(a => (!a[1] || a[1].includes(type)) && (a[2] || 1) <= niv && niv <= (a[3] || 3));
     const artisan = accorder(any(liste.length ? liste : ARTISANS["Humains"])[0], g);
     const s1 = (f ? "Elle" : "Il") + " fut " + artisan + ", " + (EPOQUE_TXT[origine.epoque] || "il y a bien longtemps") + ".";
-    const voyage = choisir(VOYAGES, origine.peuple, exclus.textes);
-    const accroche = choisir(ACCROCHES, origine.peuple, exclus.textes);
+    const voyage = choisir(VOYAGES, origine.peuple, exclus.textes, niv);
+    const accroche = choisir(ACCROCHES, origine.peuple, exclus.textes, niv);
     const s2 = (f ? "Elle" : "Il") + " vient " + (PROV_TXT[origine.provenance] || "de loin") + ". " + accorder(voyage, g) + ".";
     const s3 = accorder(accroche, g);
     return { textes: [s1, s2, s3], modeles: [voyage, accroche] };
@@ -241,8 +286,10 @@
     exclus = exclus || { noms: new Set(), textes: new Set() };
     let n, essais = 0;
     do { n = nom(item, origine); } while (exclus.noms.has(n.nom) && ++essais < 50);
-    const l = legende(origine, n.g, genre(item), exclus);
-    return { nom: n.nom, glose: n.glose || "", g: n.g, legende: l.textes, modeles: l.modeles, origine };
+    const l = legende(origine, n.g, genre(item), exclus, palier(item));
+    const mat = any(MATIERES[origine.peuple] || MATIERES["Humains"]);
+    const apparence = (/^une /.test(mat) ? "Fait d'" : "En ") + mat + " ; " + any(DETAILS) + ".";
+    return { nom: n.nom, glose: n.glose || "", g: n.g, legende: l.textes, modeles: l.modeles, origine, apparence };
   }
   function histoire(item, exclus) {
     return composer(item, window.MOTEUR.origine(item.origineFixe), exclus);
