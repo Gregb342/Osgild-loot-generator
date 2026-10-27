@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aide du Butin d'Osgild</title>
+<meta name="description" content="Mode d'emploi, règles appliquées et probabilités du générateur de trésors Butin d'Osgild pour Chroniques Oubliées Fantasy 2e édition.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%23A97B22'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%23F6F7F4' stroke-width='2'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,500;0,700;1,400&family=Alegreya+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=0.3.0-beta">
+</head>
+<body class="doc">
+<div class="page">
+  <header class="masthead">
+    <p class="retour"><a href="index.html">← Retour au générateur</a></p>
+    <h1>Aide et règles</h1>
+    <p>Comment se servir du Butin d'Osgild, ce qui vient du livre, ce qui est maison et pourquoi, et les probabilités réelles de chaque tirage.</p>
+  </header>
+
+  <div class="doc-layout">
+    <nav class="sommaire" aria-label="Sommaire">
+      <p class="sommaire-titre">Sommaire</p>
+      <ol>
+        <li><a href="#demarrer">En une minute</a></li>
+        <li><a href="#modes">Que tirer ?</a></li>
+        <li><a href="#reglages">Les réglages</a>
+          <ol>
+            <li><a href="#niveau-cadre">Niveau et cadre</a></li>
+            <li><a href="#sources">Sources</a></li>
+            <li><a href="#ampleur">Ampleur</a></li>
+            <li><a href="#menace-nc">Menace et NC</a></li>
+          </ol>
+        </li>
+        <li><a href="#lire">Lire le résultat</a>
+          <ol>
+            <li><a href="#carte-argent">Argent et équipement</a></li>
+            <li><a href="#carte-objet">Objet magique</a></li>
+            <li><a href="#identification">Identification</a></li>
+            <li><a href="#histoire">Histoire d'un objet</a></li>
+            <li><a href="#exotiques">Objets exotiques</a></li>
+            <li><a href="#historique">Copier et retrouver</a></li>
+          </ol>
+        </li>
+        <li><a href="#livre">Ce qui vient du livre</a></li>
+        <li><a href="#maison">Règles maison</a></li>
+        <li><a href="#probabilites">Probabilités et barèmes</a>
+          <ol>
+            <li><a href="#proba-argent">Argent</a></li>
+            <li><a href="#proba-magie">Objets magiques</a></li>
+            <li><a href="#categories">Catégories d'objets</a></li>
+            <li><a href="#proba-exotiques">Objets exotiques</a></li>
+          </ol>
+        </li>
+        <li><a href="#donnees">Données et versions</a></li>
+      </ol>
+    </nav>
+
+    <main class="doc-corps">
+      <section id="demarrer">
+        <h2>En une minute</h2>
+        <ol class="etapes">
+          <li>Indique le <b>niveau des PJ</b> et le <b>cadre de jeu</b>.</li>
+          <li>Choisis <b>ce que tu veux tirer</b> : le butin d'une rencontre, ou un objet seul.</li>
+          <li>Pour une rencontre, dis <b>sur qui ou où</b> les PJ fouillent, l'<b>ampleur</b> et la <b>menace</b>.</li>
+          <li><b>Lance les dés.</b> Chaque carte du résultat est prête à jouer : statistiques, description pour les joueurs, valeur, détail des jets.</li>
+        </ol>
+        <figure>
+          <a href="img/aide/vue-ensemble.webp" class="zoom"><img src="img/aide/vue-ensemble.webp" width="2560" height="1800" alt="Le générateur : le formulaire à gauche, le trésor de fin d'aventure d'une armée en campagne à droite, avec une carte d'argent, une carte d'équipement et des objets magiques." loading="lazy"></a>
+          <figcaption>Le formulaire à gauche, le résultat à droite. Sur téléphone, le résultat passe sous le formulaire.</figcaption>
+        </figure>
+        <p>Chaque réglage a un petit <span class="i-demo">i</span> : un clic ouvre une explication courte et un lien vers la section qui va bien ici. Le bouton « Visite guidée », en haut du générateur, refait le tour de l'écran pas à pas.</p>
+      </section>
+
+      <section id="modes">
+        <h2>Que tirer ?</h2>
+        <dl class="defs">
+          <dt>Le butin d'une rencontre</dt>
+          <dd>Tout ce que les PJ ramassent : l'argent, les gemmes et objets d'art, les trouvailles, l'équipement récupérable et, parfois, des objets magiques. C'est le mode à utiliser à la table.</dd>
+          <dt>Objet majeur</dt>
+          <dd>Un objet permanent au niveau de magie le plus élevé que le livre autorise pour ce niveau et ce cadre. Pour une récompense, un trésor de quête, un objet de boss.</dd>
+          <dt>Objet mineur</dt>
+          <dd>Un objet permanent lu dans la colonne niveau ÷ 2 de la même table : un bon objet, mais pas le plus puissant.</dd>
+          <dt>Consommable</dt>
+          <dd>Une potion, un parchemin ou des projectiles magiques.</dd>
+          <dt>Objet exotique</dt>
+          <dd>Règle maison : un objet étrange lié à une divinité ou une puissance d'Osgild. Voir <a href="#exotiques">Objets exotiques</a>.</dd>
+        </dl>
+        <p>Pour un objet seul, tu peux restreindre la <b>catégorie</b> (arme, armure, objet de pouvoir…) et en tirer jusqu'à <b>huit</b> d'un coup.</p>
+      </section>
+
+      <section id="reglages">
+        <h2>Les réglages</h2>
+        <figure class="etroite">
+          <a href="img/aide/formulaire.webp" class="zoom"><img src="img/aide/formulaire.webp" width="672" height="2160" alt="Le formulaire du butin d'une rencontre : niveau, cadre, mode, source, ampleur, nombre d'adversaires, menace, objets exotiques et NC précis." loading="lazy"></a>
+          <figcaption>Le formulaire en mode « Le butin d'une rencontre ».</figcaption>
+        </figure>
+
+        <h3 id="niveau-cadre">Niveau des PJ et cadre de jeu</h3>
+        <p>Le livre fixe, pour chaque niveau et chaque cadre, la puissance maximale d'un objet magique majeur. Le générateur la lit directement : un objet majeur prend la colonne du niveau, un objet mineur la colonne niveau ÷ 2 (arrondi en dessous). « C » signifie consommables seulement, « 0 » aucun objet magique.</p>
+        <div class="tableau" id="t-puissance"></div>
+        <p>Le livre plafonne aussi le total porté par un PJ : <span id="t-plafond"></span> Le générateur l'affiche sous le formulaire ; à toi de le surveiller sur la durée.</p>
+        <p class="note">Le niveau des PJ ne change <b>pas</b> l'argent : la bourse dépend de qui la porte, donc du NC de la rencontre.</p>
+
+        <h3 id="sources">Sources : sur qui, ou où ?</h3>
+        <p>Chaque source décrit un type d'adversaire ou de lieu. Elle règle combien d'argent il y a (richesse), la part de magie, les gemmes, l'équipement porté (armes, armures, état), les trouvailles typiques, les catégories d'objets magiques probables et parfois une règle spéciale (fausse monnaie, or des fées, composants à prélever…). Des loups n'ont pas de bourse ; une tour de sorcier regorge de parchemins.</p>
+        <div class="tableau" id="t-sources"></div>
+        <p class="note">Richesse : multiplicateur du barème d'argent pour chaque ampleur. Magie : multiplicateur des chances d'objets magiques. Exotisme : multiplicateur des chances d'objet exotique.</p>
+
+        <h3 id="ampleur">Ampleur</h3>
+        <dl class="defs">
+          <dt>Sur les corps</dt>
+          <dd>Ce que les adversaires ont sur eux : un peu d'argent, leurs armes et armures, parfois une potion. Le <b>nombre d'adversaires</b> compte ici : plus ils sont nombreux, plus il y a de pièces (× 0,7 + 0,1 par adversaire, au plus × 2), d'équipement et de chances de magie (au plus × 2).</dd>
+          <dt>Repaire</dt>
+          <dd>Le magot accumulé dans leur cachette : nettement plus d'argent, des gemmes, des objets d'art, de l'équipement stocké, et une vraie chance d'objet magique.</dd>
+          <dt>Fin d'aventure</dt>
+          <dd>Le trésor du boss ou la récompense finale : deux fois l'argent d'un repaire, au moins une gemme si la source en a, et un <b>objet majeur garanti</b> si la source a de la magie (un objet mineur sinon). Cet objet est signalé comme candidat à une histoire.</dd>
+        </dl>
+
+        <h3 id="menace-nc">Menace et NC précis</h3>
+        <p>Le NC (niveau de la rencontre) décide de l'argent, des gemmes et de l'équipement stocké. Sans NC précis, il se déduit de la menace :</p>
+        <ul>
+          <li><b>Plus faible</b> que le groupe : NC = niveau des PJ − 2 ;</li>
+          <li><b>À sa mesure</b> : NC = niveau des PJ ;</li>
+          <li><b>Redoutable</b> : NC = niveau des PJ + 2. En fin d'aventure, l'objet majeur garanti gagne alors un niveau de magie.</li>
+        </ul>
+        <p>Si tu connais le NC exact (celui du bestiaire, ou celui d'un groupe : douze gnolls et leur chef font une rencontre NC 7), saisis-le dans <b>NC précis</b> : il remplace la menace, qui se grise. « Effacer » revient au calcul par la menace.</p>
+        <p class="note">Le NC ne lève jamais le plafond de magie : même face à un dragon, un groupe de niveau 3 ne trouve pas d'objet de niveau de magie 5. C'est la règle du livre.</p>
+      </section>
+
+      <section id="lire">
+        <h2>Lire le résultat</h2>
+        <p>Tout est en <b>vue MJ</b> : les cartes disent ce que l'objet fait vraiment, y compris ce que les joueurs ne savent pas encore. Chaque carte se termine par « Jets de dés », qui détaille chaque tirage pour vérifier ou arbitrer.</p>
+
+        <h3 id="carte-argent">Argent et équipement</h3>
+        <figure>
+          <a href="img/aide/carte-argent.webp" class="zoom"><img src="img/aide/carte-argent.webp" width="1488" height="982" alt="Carte d'argent : le total, la répartition en pièces d'or, d'argent et de cuivre, une gemme, et des trouvailles." loading="lazy"></a>
+          <figcaption>La carte d'argent : le total, puis le détail.</figcaption>
+        </figure>
+        <ul>
+          <li>Les pièces sont réparties en <b>pp, po, pa et pc</b> selon la source : des gobelins ont surtout du cuivre, un antre de dragon ou une tour de sorcier davantage d'or. Rappel : 1 pp = 10 po, 1 po = 10 pa, 1 pa = 10 pc ; les prix du livre sont en pa.</li>
+          <li>Les <b>gemmes</b> et <b>objets d'art</b> ont leur valeur entre parenthèses.</li>
+          <li>Les <b>trouvailles</b> sont propres à la source : un carnet de voyage, une lanterne cabossée, une botte d'aventurier… certaines valent quelque chose, d'autres sont des accroches.</li>
+          <li>Les encadrés dorés signalent les règles spéciales (fausse monnaie, or des fées, composants à prélever) et l'encombrement des pièces au-delà de 200.</li>
+        </ul>
+        <figure>
+          <a href="img/aide/carte-equipement.webp" class="zoom"><img src="img/aide/carte-equipement.webp" width="1488" height="1666" alt="Carte d'équipement non magique : des armes et armures avec leurs dégâts, leur défense, leur état et leur valeur." loading="lazy"></a>
+          <figcaption>L'équipement récupérable, avec ses statistiques du livre.</figcaption>
+        </figure>
+        <p>Chaque pièce a ses statistiques du livre (DM, DEF, AGI max, portée), son encombrement (règle optionnelle de l'Atlas) et un <b>état</b> qui change sa valeur et parfois son usage :</p>
+        <div class="tableau" id="t-etats"></div>
+
+        <h3 id="carte-objet">Objet magique</h3>
+        <figure>
+          <a href="img/aide/carte-objet.webp" class="zoom"><img src="img/aide/carte-objet.webp" width="1488" height="1170" alt="Carte d'un objet magique : sceau doré avec le niveau de magie, nom, effets, description pour les joueurs, identification dépliée, valeur et boutons." loading="lazy"></a>
+          <figcaption>Un objet magique, identification dépliée.</figcaption>
+        </figure>
+        <ul>
+          <li>Le <b>sceau</b> donne le niveau de magie (NM). Un sceau fin marqué « C » est un consommable, un sceau en pointillés bleus ✶ un objet exotique.</li>
+          <li>Les <b>effets</b> sont prêts à jouer : bonus, propriétés, sort reproduit avec son rang, sa voie et son profil, utilisations par jour.</li>
+          <li>« À décrire aux joueurs » : son apparence, sans rien révéler.</li>
+          <li>La <b>valeur</b> suit le livre (NM² × 200 po ; rang² × 50 pa pour une potion ou un parchemin) ; la revente se fait à moitié prix au plus.</li>
+          <li>Une potion a un bouton pour l'<b>effet secondaire</b> (2d6) si le buveur a déjà une potion active et rate son test de CON.</li>
+        </ul>
+
+        <h3 id="identification">Identification</h3>
+        <p>La section « Identification » dit ce que les PJ découvrent seuls et comment en savoir plus :</p>
+        <ul>
+          <li>chaque effet est marqué <span class="tag tag-vu">évident</span> (un bonus en attaque se sent au premier coup) ou <span class="tag tag-cache">caché</span> (une résistance ne se révèle que face au danger) ;</li>
+          <li>les moyens d'identifier sont ceux du livre, avec les difficultés calculées pour cet objet : un lanceur de sorts dont le plus haut rang de sort atteint le niveau de magie l'identifie en une récupération rapide ; un barde (test d'INT, 25 − 2 × NM, au moins 5) a pu en entendre parler ; un maître d'armes (test d'INT, 10 + 2 × NM) estime une arme en la maniant ; un forgesort (test d'INT, 5 + 5 × rang) analyse une potion ; un lanceur de sorts de la même famille lit un parchemin sans test ; sinon, un sage.</li>
+        </ul>
+        <div class="tableau" id="t-ident"></div>
+
+        <h3 id="histoire">Histoire d'un objet</h3>
+        <figure>
+          <a href="img/aide/carte-histoire.webp" class="zoom"><img src="img/aide/carte-histoire.webp" width="1488" height="1718" alt="Carte d'un objet avec une histoire : nom propre, légende, origine tirée sur 3d10, indices visibles et boutons pour changer de version." loading="lazy"></a>
+          <figcaption>Le même objet après « Lui donner une histoire ».</figcaption>
+        </figure>
+        <p>Par défaut, un objet n'a pas d'histoire : la plupart des objets magiques sont des outils. Pour ceux qui comptent, le bouton <b>« Lui donner une histoire »</b> tire son origine sur la table 3d10 du livre (provenance, époque, peuple), puis génère un nom propre et une légende cohérents avec cette origine, et les <b>indices visibles</b> sur l'objet (poinçon nain, motif impérial, odeur de soufre…) que les PJ peuvent remarquer. « Autre nom et légende » garde l'origine, « Autre origine » repart de zéro, « Retirer l'histoire » rend l'objet anonyme. L'objet majeur d'une fin d'aventure est signalé comme candidat.</p>
+        <p>Le générateur évite de resservir un nom ou une phrase déjà sortis dans ton historique.</p>
+
+        <h3 id="exotiques">Objets exotiques</h3>
+        <figure>
+          <a href="img/aide/carte-exotique.webp" class="zoom"><img src="img/aide/carte-exotique.webp" width="1488" height="1582" alt="Carte d'un objet exotique lié à une divinité d'Osgild : sceau en pointillés, effet, contrepartie, usage, caprice et identification." loading="lazy"></a>
+          <figcaption>Un objet exotique : son effet, sa contrepartie, et parfois une table à lancer.</figcaption>
+        </figure>
+        <p>Règle maison, hors règles du livre. Un objet exotique est lié à une divinité ou une puissance d'Osgild (divinités de l'Atlas, Puissances, saisons, Seigneurs des animaux, Roi-Sorcier, ombre féérique). Son domaine donne le <b>ton</b> : lumineux, neutre, sombre ou fou. Il n'apporte pas de bonus chiffré permanent en combat : c'est un effet narratif, à double tranchant ou inquiétant, avec une contrepartie et une fréquence d'usage. Un objet sur deux a en plus un <b>caprice</b>. Les objets dangereux le montrent (aura, odeur, gravure).</p>
+        <p>On les obtient en mode « Objet exotique » (en choisissant la divinité, ou au hasard), ou dans le butin d'une rencontre si tu les actives : <b>Jamais</b> (par défaut), <b>Rares</b> ou <b>Fréquents</b>. Les sources étranges (fées, tour de sorcier, tombeau, culte) en donnent plus souvent ; les chances exactes sont dans <a href="#proba-exotiques">Probabilités</a>. Il y en a <span id="t-nb-exo"></span>.</p>
+
+        <h3 id="historique">Copier, relancer, retrouver</h3>
+        <ul>
+          <li><b>Texte joueurs</b> (sur une carte) ou <b>Texte pour les joueurs</b> (tout le butin) copie ce que les PJ voient et ce qu'ils ont découvert, sans règles cachées ni notes MJ. Prêt à coller dans un message.</li>
+          <li><b>Copier le butin</b> copie la vue MJ complète, en texte.</li>
+          <li><b>Relancer</b> retire un objet seul, avec les mêmes réglages.</li>
+          <li><b>Butins précédents</b> garde les 20 derniers tirages, histoires et relances comprises. « Vider l'historique » les efface.</li>
+        </ul>
+      </section>
+
+      <section id="livre">
+        <h2>Ce qui vient du livre</h2>
+        <p>Ces règles sont celles du livre de base de <i>Chroniques Oubliées Fantasy</i> 2<sup>e</sup> édition (chapitres « Objets magiques » et « Équipement »), appliquées telles quelles :</p>
+        <ul>
+          <li>la table <b>Puissance d'un objet magique majeur</b> par niveau et par cadre, et le plafond de niveaux de magie porté par PJ ;</li>
+          <li>la <b>valeur</b> des objets (NM² × 200 po) et des potions et parchemins (rang² × 50 pa) ;</li>
+          <li>les <b>armes et armures magiques</b> : bonus, propriétés tirées sur les tables et leur coût en niveaux de magie, propriétés doublées et capacités spéciales ;</li>
+          <li>les <b>objets de pouvoir</b> qui reproduisent une capacité d'une voie, les <b>objets de puissance</b>, les <b>baguettes</b> et <b>grimoires</b> ;</li>
+          <li>les <b>potions</b> (type sur d6, liste par rareté) et leur <b>effet secondaire</b> (2d6) ; les <b>parchemins</b> (rang et voie) ;</li>
+          <li>l'<b>identification</b> : lanceur de sorts de rang suffisant, barde, maître d'armes, forgesort, sage ;</li>
+          <li>la table d'<b>origine</b> des objets (3d10 : provenance, époque, peuple) ;</li>
+          <li>les statistiques et prix des <b>armes et armures</b>, l'objet de qualité, et la monnaie (1 pp = 10 po = 100 pa = 1 000 pc) ;</li>
+          <li>l'<b>encombrement</b>, règle optionnelle de l'Atlas d'Osgild.</li>
+        </ul>
+        <p>Deux choix d'interprétation : le rang d'une potion dont le sort n'apparaît pas dans les voies du livre de base est estimé (pour sa valeur et son identification), et les potions et parchemins de « Nécromancien » sont rattachés au profil Sorcier.</p>
+      </section>
+
+      <section id="maison">
+        <h2>Règles maison, et pourquoi</h2>
+        <p>Le livre dit quelle puissance un objet peut avoir et combien un PJ devrait en porter ; il ne dit pas ce qu'on trouve dans la bourse d'un bandit. Tout ce qui suit comble ce vide. C'est ajustable dans les fichiers du dépôt.</p>
+        <dl class="defs">
+          <dt>Sources, ampleur, menace</dt>
+          <dd>Inspiré des types de trésor d'AD&amp;D et des trésors individuels et de repaire de D&amp;D 5e, pour que le butin colle à la scène plutôt qu'au seul niveau des PJ.</dd>
+          <dt>L'argent dépend du NC, pas du niveau des PJ</dt>
+          <dd>C'est l'adversaire qui porte la bourse. Le barème est calibré sur les prix de COF (une épée longue vaut 6 pa, un cheval de selle 100 pa) pour que l'or reste désirable : voir <a href="#proba-argent">le barème</a>.</dd>
+          <dt>La magie reste plafonnée par le niveau des PJ</dt>
+          <dd>La source et l'ampleur décident <i>si</i> un objet tombe ; le livre décide <i>de quelle puissance</i>. On garde ainsi l'équilibre prévu par le livre.</dd>
+          <dt>Un objet majeur a de l'allure</dt>
+          <dd>Un objet majeur n'est jamais un simple objet de compétence, ni un objet de puissance sous le niveau de magie 3 ; il peut recevoir un second pouvoir. Une arme ou une armure garantie en fin d'aventure a toujours au moins une propriété, et l'objet gagne un niveau de magie si la rencontre était redoutable.</dd>
+          <dt>Des objets cohérents avec leur source</dt>
+          <dd>Sept fois sur dix, une arme ou une armure magique est une pièce que la source porte vraiment (une arbalète chez les gardes, une hache chez les orques). Les objets de pouvoir sont tirés dans les profils de la source (sorts de prêtre dans un temple), et les capacités inutilisables en objet (compagnons, traits de classe, bonus de caractéristique) sont écartées.</dd>
+          <dt>États de l'équipement</dt>
+          <dd>Récupérer l'équipement est une source de revenus classique, mais pas une fortune : la plupart des armes ramassées sont usées ou abîmées, et valent moins.</dd>
+          <dt>Gemmes, objets d'art et trouvailles</dt>
+          <dd>Pour varier le butin et donner des accroches. Leur valeur suit le NC (d8 + NC ÷ 2 sur la table de valeurs).</dd>
+          <dt>Les histoires à la demande</dt>
+          <dd>Un nom et une légende pour chaque épée +1 diluent ce qui compte. Le MJ choisit quels objets en méritent une ; les niveaux de magie élevés ont des légendes plus prestigieuses.</dd>
+          <dt>Identification : compléments</dt>
+          <dd>Le prix d'un sage (10 pa par NM) et l'indice en goûtant une potion sont des suggestions maison, tout comme les tests propres aux objets exotiques.</dd>
+          <dt>Objets exotiques</dt>
+          <dd>Pour les objets qui font une histoire à eux seuls, à la manière des artefacts farfelus ou inquiétants d'autres jeux, mais ancrés dans les divinités et puissances d'Osgild. Désactivés par défaut.</dd>
+        </dl>
+      </section>
+
+      <section id="probabilites">
+        <h2>Probabilités et barèmes</h2>
+        <p>Ces tableaux sont calculés en direct à partir des fichiers de données du générateur : ils sont toujours à jour.</p>
+
+        <h3 id="proba-argent">Argent</h3>
+        <p>Montant moyen avant le coefficient de richesse de la source, pour 3 adversaires « sur les corps ». Le tirage réel varie de 0,3 à 1,7 fois la moyenne (2d6 ÷ 7).</p>
+        <div class="tableau" id="t-argent"></div>
+        <p class="note">Formules : sur les corps 3 × (NC + 1)<sup>1,3</sup> × (0,7 + 0,1 × adversaires, au plus 2) ; repaire 8 × (NC + 1)<sup>1,7</sup> ; fin d'aventure 16 × (NC + 1)<sup>1,7</sup> ; le tout en pa, multiplié par la richesse de la source.</p>
+
+        <h3 id="proba-magie">Objets magiques</h3>
+        <p>Chances d'obtenir au moins un objet permanent, par source et par ampleur (3 adversaires sur les corps), et nombre moyen de consommables. La puissance de l'objet suit ensuite la table du livre.</p>
+        <div class="tableau" id="t-magie"></div>
+        <p class="note">Base : sur les corps, objet mineur 5 % (× 0,5 + adversaires ÷ 4, au plus × 2) ; repaire, objet majeur 12 %, sinon mineur 30 % ; fin d'aventure, objet majeur garanti (si magie ≥ 0,5, mineur sinon) plus 30 % d'un objet mineur. Tout est multiplié par la magie de la source.</p>
+
+        <h3 id="categories">Catégories d'objets</h3>
+        <p>Quand la catégorie est « Au hasard », le type d'objet est tiré selon ces poids. Dans le butin d'une rencontre, chaque source a ses propres poids (plus de parchemins chez un sorcier, plus d'armes chez des soldats).</p>
+        <div class="deux">
+          <div class="tableau" id="t-cat-perm"></div>
+          <div class="tableau" id="t-cat-conso"></div>
+        </div>
+
+        <h3 id="proba-exotiques">Objets exotiques</h3>
+        <p>Chance qu'un butin de rencontre contienne un objet exotique, selon le réglage.</p>
+        <div class="tableau" id="t-exo"></div>
+        <p class="note">Base « Rares » : 2 % sur les corps, 6 % en repaire, 12 % en fin d'aventure, × 3 en « Fréquents », × l'exotisme de la source, plafonné à 90 %.</p>
+      </section>
+
+      <section id="donnees">
+        <h2>Données et versions</h2>
+        <p>Tout fonctionne dans ton navigateur : aucun compte, aucun serveur. Tes derniers réglages et tes 20 derniers butins sont gardés dans le stockage local du navigateur (ils restent sur cet appareil, et disparaissent si tu effaces les données du site).</p>
+        <p>Le générateur est en bêta : <a href="https://github.com/Gregb342/Osgild-loot-generator/blob/main/CHANGELOG.md">liste des nouveautés</a>, <a href="https://github.com/Gregb342/Osgild-loot-generator/issues">signaler un problème ou proposer une idée</a>, <a href="https://github.com/Gregb342/Osgild-loot-generator">code source</a>.</p>
+      </section>
+    </main>
+  </div>
+
+  <footer class="foot">
+    <p class="version">Version <span id="version">0.3.0 bêta</span> · <a href="index.html">générateur</a></p>
+    <p>Tables issues du livre de base de <i>Chroniques Oubliées Fantasy</i> 2<sup>e</sup> édition, © Black Book Éditions. Les sources de butin, l'argent, les gemmes, les trouvailles, les descriptions et les objets exotiques sont des règles maison. Outil de fan, gratuit et non officiel.</p>
+  </footer>
+</div>
+
+<script src="js/tables.js?v=0.3.0-beta"></script>
+<script src="js/maison.js?v=0.3.0-beta"></script>
+<script src="js/sources.js?v=0.3.0-beta"></script>
+<script src="js/exotiques.js?v=0.3.0-beta"></script>
+<script src="js/equipement.js?v=0.3.0-beta"></script>
+<script src="js/aide.js?v=0.3.0-beta"></script>
+</body>
+</html>

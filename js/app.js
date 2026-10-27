@@ -109,7 +109,7 @@
     else if (o.consommable || !o.nm) { sceau.classList.add("conso"); s.textContent = "C"; }
     else s.textContent = o.nm;
     sceau.title = o.exotique ? "Objet exotique, hors règles du livre" : o.bourse ? "Argent et valeurs" : o.equip ? "Équipement non magique" : (o.consommable || !o.nm) ? "Consommable : niveau de magie 0" : "Niveau de magie " + o.nm;
-    n.querySelector(".item-cat").textContent = o.exotique ? "Objet exotique (hors règles), lié à " + o.patron.nom + ", " + o.patron.dom
+    n.querySelector(".item-cat").textContent = o.exotique ? "Objet exotique (hors règles), lié " + window.EXOTIQUES.a(o.patron.nom) + ", " + o.patron.dom
       : o.source ? o.source + ", " + o.ampleur.toLowerCase() : o.cat;
     if (o.table) {
       const bt = n.querySelector(".item-table");

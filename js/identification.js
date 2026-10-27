@@ -71,7 +71,7 @@
   function tests(item) {
     const nm = item.nm || 0, t = [];
     if (item.exotique) {
-      t.push("Un prêtre ou un fidèle de " + item.patron.nom + " reconnaît sa marque (test d'INT ou de VOL difficulté 12) et devine la nature de l'effet.");
+      t.push("Un prêtre ou un fidèle " + window.EXOTIQUES.de(item.patron.nom) + " reconnaît sa marque (test d'INT ou de VOL difficulté 12) et devine la nature de l'effet.");
       t.push("Un lanceur de sorts peut tenter de l'analyser en une récupération rapide : test d'attaque magique difficulté 15 (règle maison, ces objets échappent aux règles d'identification du livre).");
       t.push("Un érudit des cultes (INT difficulté 15) reconnaît le symbole et sait à quelle puissance l'objet est lié.");
       return t;

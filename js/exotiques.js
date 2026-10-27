@@ -366,5 +366,18 @@ window.EXOTIQUES = {
   multiplicateurFrequents: 3,
   /* Affinité des sources avec l'étrange */
   exotisme: { fees: 2, sorcier: 1.8, tombeau: 1.5, culte: 1.5, antre: 1.3, "elfes-noirs": 1.2, "betes-magiques": 1, marchands: 1,
-    pillards: 0.8, faussaires: 0.8, geants: 0.7, bandits: 0.6, betes: 0.6, armee: 0.5, soldats: 0.4 }
+    pillards: 0.8, faussaires: 0.8, geants: 0.7, bandits: 0.6, betes: 0.6, armee: 0.5, soldats: 0.4 },
+
+  /* « de » et « à » devant un nom de patron, avec élision et contraction */
+  de(nom) {
+    if (/^le /.test(nom)) return "du " + nom.slice(3);
+    if (/^les /.test(nom)) return "des " + nom.slice(4);
+    if (/^la |^l'/.test(nom)) return "de " + nom;
+    return (/^[aeiouyàâéèêëîïôöûüh]/i.test(nom) ? "d'" : "de ") + nom;
+  },
+  a(nom) {
+    if (/^le /.test(nom)) return "au " + nom.slice(3);
+    if (/^les /.test(nom)) return "aux " + nom.slice(4);
+    return "à " + nom;
+  }
 };

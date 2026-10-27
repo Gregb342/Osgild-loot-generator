@@ -9,19 +9,20 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,500;0,700;1,400&family=Alegreya+Sans:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=0.2.0-beta">
+<link rel="stylesheet" href="css/style.css?v=0.3.0-beta">
 </head>
 <body>
 <div class="page">
   <header class="masthead">
     <h1>Butin d'Osgild</h1>
     <p>Trésors tirés au dé pour Chroniques Oubliées Fantasy 2<sup>e</sup> édition, adaptés à la rencontre et calibrés sur le niveau des PJ.</p>
+    <p class="mast-actions"><button type="button" class="ghost small" id="visite">Visite guidée</button> <a class="ghost small" href="aide.html">Aide et règles</a></p>
   </header>
 
   <main class="layout">
     <form class="controls" id="form" autocomplete="off">
       <div class="field">
-        <label for="niveau">Niveau des PJ</label>
+        <label for="niveau">Niveau des PJ <button type="button" class="info" data-info="niveau" aria-label="Aide : niveau des PJ" aria-expanded="false">i</button></label>
         <div class="stepper">
           <button type="button" data-step="-1" aria-label="Niveau précédent">−</button>
           <input id="niveau" name="niveau" type="number" min="1" max="20" value="3" inputmode="numeric">
@@ -30,7 +31,7 @@
       </div>
 
       <fieldset class="field">
-        <legend>Cadre de jeu</legend>
+        <legend>Cadre de jeu <button type="button" class="info" data-info="cadre" aria-label="Aide : cadre de jeu" aria-expanded="false">i</button></legend>
         <div class="seg" role="radiogroup">
           <label><input type="radio" name="cadre" value="classique" checked><span>Classique</span></label>
           <label><input type="radio" name="cadre" value="high"><span>High fantasy</span></label>
@@ -39,7 +40,7 @@
       </fieldset>
 
       <fieldset class="field">
-        <legend>Que tirer ?</legend>
+        <legend>Que tirer ? <button type="button" class="info" data-info="mode" aria-label="Aide : que tirer" aria-expanded="false">i</button></legend>
         <div class="seg seg-mode" role="radiogroup">
           <label><input type="radio" name="mode" value="rencontre" checked><span>Le butin d'une rencontre</span></label>
           <label><input type="radio" name="mode" value="majeur"><span>Objet majeur</span></label>
@@ -51,13 +52,13 @@
 
       <div class="groupe" id="f-renc">
         <div class="field">
-          <label for="source">Sur qui, ou où ?</label>
+          <label for="source">Sur qui, ou où ? <button type="button" class="info" data-info="source" aria-label="Aide : source du butin" aria-expanded="false">i</button></label>
           <select id="source" name="source"></select>
           <p class="aide" id="aide-source"></p>
         </div>
 
         <fieldset class="field">
-          <legend>Ampleur</legend>
+          <legend>Ampleur <button type="button" class="info" data-info="ampleur" aria-label="Aide : ampleur" aria-expanded="false">i</button></legend>
           <div class="seg" role="radiogroup">
             <label><input type="radio" name="ampleur" value="corps" checked><span>Sur les corps</span></label>
             <label><input type="radio" name="ampleur" value="repaire"><span>Repaire</span></label>
@@ -67,7 +68,7 @@
         </fieldset>
 
         <div class="field" id="f-adv">
-          <label for="adversaires">Nombre d'adversaires</label>
+          <label for="adversaires">Nombre d'adversaires <button type="button" class="info" data-info="adversaires" aria-label="Aide : nombre d'adversaires" aria-expanded="false">i</button></label>
           <div class="stepper">
             <button type="button" data-step="-1" aria-label="Un adversaire de moins">−</button>
             <input id="adversaires" name="adversaires" type="number" min="1" max="30" value="3" inputmode="numeric">
@@ -76,7 +77,7 @@
         </div>
 
         <fieldset class="field" id="f-menace">
-          <legend>Menace pour le groupe</legend>
+          <legend>Menace pour le groupe <button type="button" class="info" data-info="menace" aria-label="Aide : menace" aria-expanded="false">i</button></legend>
           <div class="seg" role="radiogroup">
             <label><input type="radio" name="menace" value="faible"><span>Plus faible</span></label>
             <label><input type="radio" name="menace" value="mesure" checked><span>À sa mesure</span></label>
@@ -85,38 +86,35 @@
         </fieldset>
 
         <fieldset class="field">
-          <legend>Objets exotiques <span class="facultatif">(hors règles)</span></legend>
+          <legend>Objets exotiques <span class="facultatif">(hors règles)</span> <button type="button" class="info" data-info="exotiques" aria-label="Aide : objets exotiques" aria-expanded="false">i</button></legend>
           <div class="seg" role="radiogroup">
             <label><input type="radio" name="exotiques" value="jamais" checked><span>Jamais</span></label>
             <label><input type="radio" name="exotiques" value="rares"><span>Rares</span></label>
             <label><input type="radio" name="exotiques" value="frequents"><span>Fréquents</span></label>
           </div>
-          <p class="aide">Des objets étranges, narratifs ou inquiétants, liés à une divinité ou une puissance d'Osgild. Règle maison, à arbitrer.</p>
         </fieldset>
 
         <div class="field">
-          <label for="nc">NC précis <span class="facultatif">(facultatif)</span></label>
+          <label for="nc">NC précis <span class="facultatif">(facultatif)</span> <button type="button" class="info" data-info="nc" aria-label="Aide : NC précis" aria-expanded="false">i</button></label>
           <div class="nc-row">
             <input id="nc" name="nc" type="number" min="0" max="30" step="0.5" inputmode="decimal" placeholder="Calculé d'après la menace">
             <button type="button" class="ghost small" id="nc-effacer" hidden>Effacer</button>
           </div>
-          <p class="aide">Le NC de la rencontre si tu le connais : celui du bestiaire, ou celui d'un groupe (douze gnolls et leur chef font une rencontre NC 7).</p>
         </div>
       </div>
 
       <div class="field" id="f-patron" hidden>
-        <label for="patron">Lié à</label>
+        <label for="patron">Lié à <button type="button" class="info" data-info="patron" aria-label="Aide : divinité ou puissance liée" aria-expanded="false">i</button></label>
         <select id="patron" name="patron"></select>
-        <p class="aide">Règle maison, hors règles du livre : l'effet découle du domaine de la divinité ou de la puissance.</p>
       </div>
 
       <div class="field" id="f-cat" hidden>
-        <label for="categorie">Catégorie</label>
+        <label for="categorie">Catégorie <button type="button" class="info" data-info="categorie" aria-label="Aide : catégorie" aria-expanded="false">i</button></label>
         <select id="categorie" name="categorie"></select>
       </div>
 
       <div class="field" id="f-nb" hidden>
-        <label for="nombre">Nombre d'objets</label>
+        <label for="nombre">Nombre d'objets <button type="button" class="info" data-info="nombre" aria-label="Aide : nombre d'objets" aria-expanded="false">i</button></label>
         <div class="stepper">
           <button type="button" data-step="-1" aria-label="Un objet de moins">−</button>
           <input id="nombre" name="nombre" type="number" min="1" max="8" value="1" inputmode="numeric">
@@ -131,7 +129,7 @@
 
     <section class="results" aria-labelledby="res-titre">
       <div class="results-head">
-        <h2 id="res-titre">Résultat</h2>
+        <h2 id="res-titre">Résultat <button type="button" class="info" data-info="resultat" aria-label="Aide : lire le résultat" aria-expanded="false">i</button></h2>
         <div class="head-actions">
           <button type="button" class="ghost" id="copier-joueurs" hidden>Texte pour les joueurs</button>
           <button type="button" class="ghost" id="copier" hidden>Copier le butin</button>
@@ -150,7 +148,7 @@
   </main>
 
   <footer class="foot">
-    <p class="version">Version <span id="version">0.2.0 bêta</span> · <a href="https://github.com/Gregb342/Osgild-loot-generator/blob/main/CHANGELOG.md">nouveautés</a> · <a href="https://github.com/Gregb342/Osgild-loot-generator/issues">signaler un problème</a></p>
+    <p class="version">Version <span id="version">0.3.0 bêta</span> · <a href="aide.html">aide</a> · <a href="https://github.com/Gregb342/Osgild-loot-generator/blob/main/CHANGELOG.md">nouveautés</a> · <a href="https://github.com/Gregb342/Osgild-loot-generator/issues">signaler un problème</a></p>
     <p>Tables issues du livre de base de <i>Chroniques Oubliées Fantasy</i> 2<sup>e</sup> édition, © Black Book Éditions. Les sources de butin, l'argent, les gemmes, les trouvailles et les descriptions sont des règles maison, inspirées des tables de trésor de D&amp;D. Outil de fan, gratuit et non officiel.</p>
   </footer>
 </div>
@@ -220,16 +218,19 @@
   </article>
 </template>
 
-<script src="js/voies.js?v=0.2.0-beta"></script>
-<script src="js/tables.js?v=0.2.0-beta"></script>
-<script src="js/maison.js?v=0.2.0-beta"></script>
-<script src="js/sources.js?v=0.2.0-beta"></script>
-<script src="js/filtres.js?v=0.2.0-beta"></script>
-<script src="js/exotiques.js?v=0.2.0-beta"></script>
-<script src="js/equipement.js?v=0.2.0-beta"></script>
-<script src="js/engine.js?v=0.2.0-beta"></script>
-<script src="js/identification.js?v=0.2.0-beta"></script>
-<script src="js/lore.js?v=0.2.0-beta"></script>
-<script src="js/app.js?v=0.2.0-beta"></script>
+<script src="js/voies.js?v=0.3.0-beta"></script>
+<script src="js/tables.js?v=0.3.0-beta"></script>
+<script src="js/maison.js?v=0.3.0-beta"></script>
+<script src="js/sources.js?v=0.3.0-beta"></script>
+<script src="js/filtres.js?v=0.3.0-beta"></script>
+<script src="js/exotiques.js?v=0.3.0-beta"></script>
+<script src="js/equipement.js?v=0.3.0-beta"></script>
+<script src="js/engine.js?v=0.3.0-beta"></script>
+<script src="js/identification.js?v=0.3.0-beta"></script>
+<script src="js/lore.js?v=0.3.0-beta"></script>
+<script src="js/app.js?v=0.3.0-beta"></script>
+<script src="js/aide-textes.js?v=0.3.0-beta"></script>
+<script src="js/bulles.js?v=0.3.0-beta"></script>
+<script src="js/visite.js?v=0.3.0-beta"></script>
 </body>
 </html>

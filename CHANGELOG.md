@@ -1,5 +1,12 @@
 # Nouveautés
 
+## 0.3.0 bêta (27 octobre 2026)
+
+- **Page d'aide** (`aide.html`, lien en haut du générateur) : mode d'emploi illustré de captures d'écran, ce qui vient du livre, les règles maison et leurs raisons, et les probabilités réelles (argent par NC, chances d'objets magiques et exotiques par source et par ampleur, poids des catégories, difficultés d'identification), calculées en direct depuis les fichiers de données.
+- **Infobulles « i »** sur chaque réglage et sur le résultat : une explication courte au clic ou au toucher, avec un lien « En savoir plus » vers la bonne section de l'aide. Elles remplacent les textes d'aide permanents des objets exotiques, du NC précis et du patron.
+- **Visite guidée** en dix étapes : elle éclaire chaque zone, tire un exemple (fin d'aventure d'une tour de sorcier) et explique comment lire une carte. Proposée une seule fois à la première visite, relançable par le bouton « Visite guidée ». Clavier : flèches, Échap.
+- Correction : « fidèle d'Agag », « lié aux quatre Saisons », « lié au plan de l'ombre féérique » (élisions et contractions devant le nom du patron d'un objet exotique).
+
 ## 0.2.0 bêta (27 octobre 2026)
 
 - **Objets exotiques** (règle maison, hors règles du livre, clairement signalés) : une centaine d'effets originaux, narratifs, à double tranchant ou inquiétants, chacun lié à une puissance d'Osgild dont il découle (divinités protectrices et maléfiques de l'Atlas, Puissances, saisons, Seigneurs des animaux, Roi-Sorcier, ombre féérique).
