@@ -215,3 +215,8 @@ select {
 .eq-hs { border-left-color: var(--trait); border-left-style: dashed; opacity: .7; }
 .item-legende { margin: 0 0 .6rem; padding-left: 1.1rem; font-size: .9rem; color: var(--gris); }
 .item-rappel { margin: .2rem 0 .4rem; font-size: .875rem; color: var(--gris); }
+
+.item-jet { margin: .2rem 0 .6rem; display: grid; gap: .4rem; justify-items: start; }
+.item-jet[hidden] { display: none; }
+.jet-out { margin: 0; font-size: .95rem; }
+.jet-out:empty { display: none; }

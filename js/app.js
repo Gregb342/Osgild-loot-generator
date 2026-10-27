@@ -112,6 +112,14 @@
       const E = window.EQUIPEMENT;
       n.querySelector(".item-legende").innerHTML = vus.map(e => `<li><b>${esc(cap(E.etats[e].label))}</b> : ${esc(E.etats[e].effet)}.</li>`).join("");
     }
+    if (o.cat === "Potion") {
+      const box = n.querySelector(".item-jet");
+      box.hidden = false;
+      box.querySelector(".jet-effet").addEventListener("click", () => {
+        const r = M.effetSecondaire();
+        box.querySelector(".jet-out").innerHTML = `<span class="de">2d6 <i>${esc(r.v)}</i></span> : ${esc(r.txt)}`;
+      });
+    }
     n.querySelector(".item-rappel").textContent = (o.rappel || []).join(" ");
     n.querySelector(".item-trouv").innerHTML = (o.trouvailles || []).map(e => `<li>${esc(e)}</li>`).join("");
     n.querySelector(".item-notes").innerHTML = (o.notes || []).map(e => `<li>${esc(e)}</li>`).join("");
@@ -232,10 +240,6 @@
   }
 
   /* ---------- petits jets ---------- */
-  $("#t-effet").addEventListener("click", () => {
-    const r = M.effetSecondaire();
-    $("#o-effet").innerHTML = `<span class="de">2d6 <i>${esc(r.v)}</i></span> : ${esc(r.txt)}`;
-  });
   $("#t-origine").addEventListener("click", () => {
     const o = M.origine();
     $("#o-origine").innerHTML = `<b>Provenance :</b> ${esc(o.provenance)}<br><b>Époque :</b> ${esc(o.epoque)}<br><b>Peuple :</b> ${esc(o.peuple)}`;
