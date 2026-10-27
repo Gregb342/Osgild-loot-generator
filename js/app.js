@@ -95,12 +95,24 @@
     const n = tpl.content.firstElementChild.cloneNode(true);
     const sceau = n.querySelector(".sceau"), s = sceau.querySelector("span");
     if (o.bourse) { sceau.classList.add("or"); s.textContent = "or"; }
+    else if (o.equip) { sceau.classList.add("equip"); s.innerHTML = '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5 3 6V3h3l11.5 11.5"/><path d="m13 19 6-6"/><path d="m16 16 4 4"/><path d="m19 21 2-2"/><path d="M9.5 17.5 21 6V3h-3L6.5 14.5"/><path d="m11 19-6-6"/><path d="m8 16-4 4"/><path d="m5 21-2-2"/></svg>'; }
     else if (o.consommable || !o.nm) { sceau.classList.add("conso"); s.textContent = "C"; }
     else s.textContent = o.nm;
-    sceau.title = o.bourse ? "Argent et valeurs" : (o.consommable || !o.nm) ? "Consommable : niveau de magie 0" : "Niveau de magie " + o.nm;
+    sceau.title = o.bourse ? "Argent et valeurs" : o.equip ? "Équipement non magique" : (o.consommable || !o.nm) ? "Consommable : niveau de magie 0" : "Niveau de magie " + o.nm;
     n.querySelector(".item-cat").textContent = o.source ? o.source + ", " + o.ampleur.toLowerCase() : o.cat;
     n.querySelector(".item-nom").textContent = o.nom;
     n.querySelector(".item-effets").innerHTML = o.effets.map(e => `<li>${esc(e)}</li>`).join("");
+    if (o.equipement) {
+      n.querySelector(".item-equip").innerHTML = o.equipement.map(r => `<li class="eq eq-${r.etat}">
+        <p class="eq-nom"><b>${esc(r.nom)}</b>${r.qte > 1 ? " × " + r.qte : ""} <span class="etat">${esc(r.etatLabel)}</span></p>
+        ${r.stats ? `<p class="eq-stats">${esc(r.stats)}</p>` : ""}
+        <p class="eq-meta">Enc. ${r.arme || r.enc.porte === r.enc.transporte ? r.enc.transporte : r.enc.transporte + " transportée, " + r.enc.porte + " portée"} ; valeur ${M.argent(r.prixU)}${r.qte > 1 ? " pièce" : ""}</p>
+      </li>`).join("");
+      const vus = [...new Set(o.equipement.map(r => r.etat))].filter(e => e !== "bon");
+      const E = window.EQUIPEMENT;
+      n.querySelector(".item-legende").innerHTML = vus.map(e => `<li><b>${esc(cap(E.etats[e].label))}</b> : ${esc(E.etats[e].effet)}.</li>`).join("");
+    }
+    n.querySelector(".item-rappel").textContent = (o.rappel || []).join(" ");
     n.querySelector(".item-trouv").innerHTML = (o.trouvailles || []).map(e => `<li>${esc(e)}</li>`).join("");
     n.querySelector(".item-notes").innerHTML = (o.notes || []).map(e => `<li>${esc(e)}</li>`).join("");
     n.querySelector(".item-app").textContent = o.apparence || "";
@@ -109,6 +121,7 @@
     n.querySelector(".item-alerte").textContent = (o.alertes || []).join(" ");
     const valeur = n.querySelector(".item-val");
     if (o.bourse) n.querySelector(".item-foot").remove();
+    else if (o.equip) valeur.innerHTML = o.valeur ? `Valeur totale <b>${M.argent(o.valeur)}</b>, avant marchandage` : "";
     else if (o.valeur) valeur.innerHTML = `Valeur <b>${M.argent(o.valeur)}</b>${o.valeurNote ? " (" + esc(o.valeurNote) + ")" : ""}, revente ${M.argent(o.valeur / 2)} au plus`;
     else valeur.textContent = "Valeur au choix du MJ";
     const rel = n.querySelector(".relancer");
@@ -195,6 +208,7 @@
     return lot.map(o => {
       const l = [`• ${o.nom} (${o.source ? o.source + ", " + o.ampleur.toLowerCase() : o.cat}${o.nm ? ", niveau de magie " + o.nm : ""})`];
       o.effets.forEach(e => l.push("  - " + e));
+      (o.equipement || []).forEach(r => l.push(`  - ${r.nom}${r.qte > 1 ? " × " + r.qte : ""} (${r.etatLabel})${r.stats ? " : " + r.stats : ""} ; valeur ${M.argent(r.prixU)}`));
       (o.trouvailles || []).forEach(e => l.push("  - " + e));
       (o.notes || []).forEach(e => l.push("  ! " + e));
       if (o.apparence) l.push("  Description : " + o.apparence);
@@ -227,6 +241,7 @@
     $("#o-origine").innerHTML = `<b>Provenance :</b> ${esc(o.provenance)}<br><b>Époque :</b> ${esc(o.epoque)}<br><b>Peuple :</b> ${esc(o.peuple)}`;
   });
 
+  function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
   function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
 
   /* ---------- démarrage ---------- */

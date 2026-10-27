@@ -84,8 +84,8 @@ window.SOURCES = {
       conso: { potion: 70, projectiles: 30 },
       special: [],
       trouvailles: [
-        ["Une épée courte bien entretenue", 5],
-        ["Un arc court et un carquois de 20 flèches", 7],
+        ["Un jeu de cartes graisseux et des dés en os", 1],
+        ["Une gourde d'eau-de-vie de prune", 2],
         ["Une bague de fiançailles gravée de deux prénoms", 15],
         ["Une liste de voyageurs à détrousser, avec les dates de passage", null],
         ["Une bourse brodée aux armes d'une famille marchande", 2],
@@ -103,9 +103,9 @@ window.SOURCES = {
       conso: { potion: 70, projectiles: 30 },
       special: [],
       trouvailles: [
-        ["Une cotte de mailles en bon état", 25],
-        ["Une épée longue réglementaire", 6],
-        ["Une arbalète légère et ses carreaux", 12],
+        ["Une gourde de vin coupé d'eau", 1],
+        ["Un jeu de dés et une ardoise de dettes de jeu", null],
+        ["Une lettre d'amour jamais envoyée", null],
         ["Des ordres de mission scellés", null],
         ["Le trousseau de clés de la caserne", null],
         ["Un tabard aux couleurs de la garnison", 1],
@@ -129,7 +129,7 @@ window.SOURCES = {
         ["Un coffret de vaisselle d'étain pillé dans une auberge", 12],
         ["Une carte de la région annotée de cibles", null],
         ["Une boîte en fer blanc qui sent les épices", null],
-        ["Des haches de guerre lourdes et grossières", 8]
+        ["Des trophées : oreilles séchées enfilées sur une corde", null]
       ]
     },
     {
@@ -215,7 +215,7 @@ window.SOURCES = {
       conso: { potion: 60, parchemin: 25, projectiles: 15 },
       special: ["composants", "victimes"],
       trouvailles: [
-        ["Des ossements d'aventuriers, avec leur équipement rouillé", 5],
+        ["Des ossements d'aventuriers rongés", null],
         ["Un bouclier fendu aux armes d'une compagnie disparue", null],
         ["Le journal d'un chasseur de monstres", null],
         ["Une bourse de cuir moisie, collée aux os", null],
@@ -239,7 +239,7 @@ window.SOURCES = {
       conso: { potion: 55, parchemin: 35, projectiles: 10 },
       special: ["victimes"],
       trouvailles: [
-        ["Une armure de plaques ternie, à la taille d'un chevalier mort ici", 60],
+        ["Le blason d'un chevalier mort ici, arraché à son bouclier", null],
         ["Des coupes d'or empilées comme des écuelles", 40],
         ["Une couronne d'un royaume oublié", null],
         ["Des sacs de pièces anciennes collées par la moisissure", 20],
@@ -259,7 +259,7 @@ window.SOURCES = {
       origine: { provenance: "Les profondeurs", peuple: "Elfes noirs" },
       trouvailles: [
         ["Une fiole de poison soporifique (3 doses)", 30],
-        ["Une arbalète de poing finement ouvragée", 12],
+        ["Une carte des tunnels gravée sur une plaque d'os", null],
         ["Un bijou d'argent en forme d'araignée", 25],
         ["Des champignons phosphorescents dans une boîte d'os", 2],
         ["Une cape de soie d'araignée, noire comme l'encre", 20],

@@ -193,9 +193,11 @@
     const total = bonus + cout;
     let nom = base[2] + " +" + bonus + (props.length ? " " + props.map(p => p.n).join(" et ") : "");
     if (base[3]) { const q = d(12); log.push({ de: "d12", v: q, txt: "quantité de projectiles" }); nom = q + " " + nom.toLowerCase(); }
+    const cb = cat_(base[2]);
+    const lignesBase = cb && cb.arme ? ["Arme de base : " + statsArme(cb.a, "bon") + "."] : [];
     return {
       cat: "Arme magique", nom, nm: total,
-      effets: ["+" + bonus + " en attaque et aux DM."].concat(props.map(p => cap(p.n.replace(/^(de |d')/, "")) + " : " + p.e + ".")),
+      effets: lignesBase.concat(["+" + bonus + " en attaque et aux DM."]).concat(props.map(p => cap(p.n.replace(/^(de |d')/, "")) + " : " + p.e + ".")),
       valeur: valeurNM(total), apparence: descObjet(), consommable: !!base[3]
     };
   };
@@ -207,7 +209,9 @@
     const cout = props.reduce((a, p) => a + p.c, 0);
     const bonus = Math.max(1, nm - cout);
     const total = bonus + cout;
-    const effets = ["+" + bonus + " en DEF (un seul bonus magique de DEF compte)."];
+    const cb = cat_(base);
+    const effets = cb && !cb.arme ? [statsArmure(cb.a, "bon", bonus) + "."] : [];
+    effets.push("+" + bonus + " en DEF (un seul bonus magique de DEF compte).");
     if (/Armure|mailles|plaque|cuir/i.test(base)) effets.push("Réduit aussi ses pénalités de " + bonus + ".");
     props.forEach(p => effets.push(cap(p.n.replace(/^(de |d')/, "")) + " : " + p.e.replace(/ 2X /, " 10 ").replace(/ X /, " 5 ") + "."));
     return {
@@ -368,6 +372,116 @@
     return it;
   }
 
+  /* ---------- équipement non magique ---------- */
+  const E = window.EQUIPEMENT;
+  function cat_(nom) {
+    if (!E) return null;
+    const k = nom in E.alias ? E.alias[nom] : nom;
+    if (!k) return null;
+    if (E.armes[k]) return { k, a: E.armes[k], arme: true };
+    if (E.armures[k]) return { k, a: E.armures[k], arme: false };
+    return null;
+  }
+  const signe = x => (x >= 0 ? "+" : "−") + Math.abs(x);
+  function statsArme(a, etat) {
+    let dm = a.dm;
+    if (etat === "abime") dm = a.dm.split("/").map(x => x + "−1").join("/");
+    const s = ["DM " + dm + " " + a.type];
+    if (a.portee) s.push("portée " + a.portee);
+    if (a.notes) s.push(a.notes);
+    return s.join(", ");
+  }
+  function statsArmure(a, etat, bonusMagique) {
+    let def = a.def + (bonusMagique || 0);
+    if (etat === "abime") def = a.bouclier ? Math.max(1, def - 1) : def - 1;
+    const s = ["DEF " + signe(def)];
+    if (bonusMagique) s[0] += " (" + signe(a.def) + " de base, " + signe(bonusMagique) + " magique)";
+    if (a.agi !== undefined) s.push("AGI max " + signe(a.agi));
+    if (a.bouclier && etat === "abime") s.push("se brise au premier coup critique encaissé");
+    if (a.notes) s.push(a.notes);
+    return s.join(", ");
+  }
+  function encArmure(a, bonusMagique) {
+    if (a.bouclier) return { porte: a.enc, transporte: a.enc };
+    const def = a.def;  // l'Atlas retranche le bonus magique : on part de la DEF de base
+    return { porte: Math.ceil(def / 2), transporte: def };
+  }
+
+  function piece(kit, quoi) {
+    const nom = pickW(quoi);
+    const etat = pickW(kit.etats);
+    return { nom, etat };
+  }
+
+  function equipement(src, ampleur, n, nc, log) {
+    if (!E) return null;
+    const ks = E.kitSource[src.id];
+    if (!ks) return null;
+    const kit = E.kits[ks.kit];
+    const pieces = [];
+    if (ampleur === "corps") {
+      if (!ks.porte) return ks.note ? { rows: [], notes: [ks.note] } : null;
+      for (let i = 0; i < n; i++) {
+        pieces.push(piece(kit, kit.armes));
+        if (kit.distance && pct(kit.distanceP || 0)) pieces.push(piece(kit, kit.distance));
+        if (pct(kit.armure)) pieces.push(piece(kit, kit.armures));
+        if (pct(kit.bouclier)) pieces.push(piece(kit, kit.boucliers || { "Petit bouclier": 1, "Grand bouclier": 1 }));
+      }
+      log.push({ de: "", v: "", txt: "équipement porté par " + n + " adversaire(s) : " + pieces.length + " pièce(s)" });
+    } else {
+      const nb = d(4) + Math.floor(nc / 3) + (ampleur === "fin" ? 1 : 0);
+      log.push({ de: "d4", v: nb, txt: "pièces d'équipement stockées (d4 + NC/3" + (ampleur === "fin" ? " + 1" : "") + ")" });
+      const tout = Object.assign({}, kit.armes, kit.distance || {});
+      for (let i = 0; i < nb; i++) {
+        const r = d(3);
+        pieces.push(piece(kit, r <= 2 ? tout : Object.assign({}, kit.armures, kit.bouclier ? (kit.boucliers || { "Petit bouclier": 0.5, "Grand bouclier": 0.5 }) : {})));
+      }
+    }
+    // regroupement
+    const map = new Map();
+    pieces.forEach(p => { const k = p.nom + "|" + p.etat; map.set(k, (map.get(k) || 0) + 1); });
+    const ordreEtat = ["qualite", "bon", "use", "abime", "hs"];
+    const rows = [...map.entries()].map(([k, q]) => {
+      const [nom, etat] = k.split("|");
+      const c = cat_(nom), a = c.a, et = E.etats[etat];
+      const prixU = etat === "qualite" ? a.prix * 2 + 100 : a.prix * et.f;
+      const enc = c.arme ? { porte: a.enc, transporte: a.enc } : encArmure(a);
+      let stats = etat === "hs" ? "" : (c.arme ? statsArme(a, etat) : statsArmure(a, etat));
+      if (etat === "qualite") stats += c.arme ? " ; +1 en attaque ou aux DM (au choix, toujours le même)" : " ; pénalité aux tests d'AGI réduite de 1";
+      return { nom, qte: q, etat, etatLabel: et.label, etatEffet: etat === "qualite" ? "" : et.effet, stats, prixU, enc, arme: c.arme, ordre: ordreEtat.indexOf(etat) };
+    }).sort((x, y) => x.ordre - y.ordre || x.nom.localeCompare(y.nom));
+    const notes = [];
+    if (kit.taille) notes.push(kit.taille);
+    if (ks.note) notes.push(ks.note);
+    return { rows, notes };
+  }
+
+  /* ---------- monnaie ---------- */
+  function monnaie(pa, profil) {
+    const parts = (E && E.monnaie[profil]) || { po: 0.3, pa: 0.55, pc: 0.15 };
+    let v = Math.round(pa * 10); // en pc
+    const unit = { pp: 1000, po: 100, pa: 10, pc: 1 };
+    const out = { pp: 0, po: 0, pa: 0, pc: 0 };
+    if (v < 10) out.pc = v;
+    else {
+      const ordre = ["pp", "po", "pa", "pc"];
+      ["pp", "po", "pa"].forEach((u, i) => {
+        const sh = parts[u] || 0;
+        if (!sh || (u === "pp" && v < 2000)) return;
+        const reste = ordre.slice(i).reduce((a, x) => a + (parts[x] || 0), 0);
+        const n = Math.floor(v * (sh / reste) * (0.75 + Math.random() * 0.5) / unit[u]);
+        out[u] = Math.min(n, Math.floor(v / unit[u])); v -= out[u] * unit[u];
+      });
+      if (parts.pc >= 0.5) out.pc = v;           // les pauvres gardent tout en cuivre
+      else { out.pa += Math.floor(v / 10); out.pc = v % 10; }
+    }
+    const noms = { pp: "pp", po: "po", pa: "pa", pc: "pc" };
+    const bouts = ["pp", "po", "pa", "pc"].filter(u => out[u]).map(u => out[u] + " " + noms[u]);
+    const txt = bouts.length > 1 ? bouts.slice(0, -1).join(", ") + " et " + bouts[bouts.length - 1] : (bouts[0] || "0 pc");
+    const nb = out.pp + out.po + out.pa + out.pc;
+    return { out, txt, nb };
+  }
+
   /* ---------- rencontre ---------- */
   const S = window.SOURCES;
   const fmtNC = nc => (nc === 0.5 ? "½" : String(nc));
@@ -392,7 +506,7 @@
     const nc = ncRencontre(niveau, opts.menace, opts.ncPrecis);
     const n = Math.max(1, opts.nombre || 1);
     const log = [], lignes = [], objets = [], notes = [];
-    let total = 0;
+    let total = 0, poidsPieces = 0;
     log.push({ de: "", v: "", txt: "NC de la rencontre : " + fmtNC(nc) + (saisi ? " (saisi)" : " (" + S.menace[opts.menace].label.toLowerCase() + ", PJ niveau " + niveau + ")") });
 
     /* pièces */
@@ -406,8 +520,10 @@
       pa = pa < 1 ? Math.round(pa * 10) / 10 : Math.round(pa);
       log.push({ de: "2d6", v: r.r.join(" + ") + " = " + r.s, txt: "pièces : moyenne " + argent(moy) + ", tirage " + argent(pa) });
       if (pa > 0) {
-        lignes.push(argent(pa) + " en pièces" + (sp.includes("cuivre") ? ", surtout du cuivre" : "")
+        const mo = monnaie(pa, (E && E.monnaieSource[src.id]) || "commun");
+        lignes.push(cap(mo.txt) + (mo.nb > 1 && mo.txt.includes(" ") && /,| et /.test(mo.txt) ? " (" + argent(pa) + " en tout)" : "")
           + (ampleur === "corps" && n > 1 ? ", réparties sur " + n + " adversaires" : ""));
+        poidsPieces = mo.nb;
         total += pa;
         if (sp.includes("fausse")) {
           const k = d(6), faux = Math.round(pa * k / 10);
@@ -456,11 +572,25 @@
     if (sp.includes("encombrant")) notes.push("Une bonne part de ce butin est encombrante : charrette ou allers-retours à prévoir.");
     if (trouv.length) log.push({ de: "", v: "", txt: trouv.length + " trouvaille(s) tirée(s) dans la liste de la source" });
 
+    const rappel = ["1 pp = 10 po, 1 po = 10 pa, 1 pa = 10 pc. Les prix du livre sont en pa ; l'or est rare chez les petites gens."];
+    if (poidsPieces >= 200) rappel.push(poidsPieces + " pièces : encombrement " + Math.ceil(poidsPieces / 200) + " (200 pièces = 1, règle optionnelle de l'Atlas).");
     const carteArgent = {
       cat: "Argent et objets de valeur", nom: argent(Math.max(0, total)) + " au total", nm: null,
-      effets: lignes, trouvailles: trouv, notes, log, bourse: true, valeur: total,
+      effets: lignes, trouvailles: trouv, notes, rappel, log, bourse: true, valeur: total,
       source: src.nom, ampleur: S.ampleur[ampleur].label
     };
+    const eq = equipement(src, ampleur, n, nc, log);
+    let carteEquip = null;
+    if (eq && (eq.rows.length || eq.notes.length)) {
+      const nbP = eq.rows.reduce((a, r) => a + r.qte, 0);
+      const utiles = eq.rows.filter(r => r.etat !== "hs").reduce((a, r) => a + r.qte, 0);
+      carteEquip = {
+        cat: "Équipement non magique", nom: nbP ? nbP + " pièce" + (nbP > 1 ? "s" : "") + (utiles < nbP ? ", dont " + utiles + " utilisable" + (utiles > 1 ? "s" : "") : "") : "Rien de récupérable",
+        nm: null, effets: [], equipement: eq.rows, notes: eq.notes, equip: true,
+        rappel: ["Encombrement (règle optionnelle de l'Atlas) : une armure transportée compte pour sa DEF, portée pour la moitié ; seuil du PJ 10 + 2 × FOR."],
+        valeur: eq.rows.reduce((a, r) => a + r.prixU * r.qte, 0), source: src.nom, ampleur: S.ampleur[ampleur].label, log: []
+      };
+    }
 
     /* objets magiques */
     const m = src.magie, pm = S.magie[ampleur];
@@ -478,7 +608,7 @@
     rangs.forEach(rang => { const o = objet(Object.assign({ rang }, base)); if (o) { o.req = Object.assign({ rang }, base); objets.push(o); } });
     for (let i = 0; i < nbConso; i++) { const o = objet(Object.assign({ rang: "consommable" }, base)); if (o) { o.req = Object.assign({ rang: "consommable" }, base); objets.push(o); } }
 
-    return [carteArgent].concat(objets);
+    return [carteArgent].concat(carteEquip ? [carteEquip] : [], objets);
   }
 
   function effetSecondaire() {
