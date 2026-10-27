@@ -232,3 +232,16 @@ select {
 .lore-txt { font: 400 1.05rem/1.55 var(--serif); }
 .item-lore .item-orig { font-size: .9rem; color: var(--gris); }
 .lore-actions, .foot-actions { display: flex; flex-wrap: wrap; gap: .4rem; }
+
+/* identification */
+.head-actions { display: flex; flex-wrap: wrap; gap: .4rem; justify-content: flex-end; }
+.ident { margin: .2rem 0 .6rem; font-size: .95rem; }
+.ident[hidden] { display: none; }
+.ident summary { cursor: pointer; font-weight: 700; padding: .25rem 0; width: max-content; }
+.ident ul, .lore-indices { margin: .2rem 0 .5rem; padding-left: 1.1rem; display: grid; gap: .3rem; }
+.lore-sous { margin: .4rem 0 0; font-size: .85rem; color: var(--gris); }
+.lore-complete { font-size: .9rem; color: var(--gris); }
+.lore-complete:empty { display: none; }
+.tag { display: inline-block; font-size: .78rem; padding: 0 .45rem; border-radius: 999px; border: 1px solid var(--trait); vertical-align: 1px; }
+.tag-vu { color: var(--lapis); border-color: var(--lapis); }
+.tag-cache { color: var(--gris); }

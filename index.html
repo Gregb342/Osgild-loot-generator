@@ -115,7 +115,10 @@
     <section class="results" aria-labelledby="res-titre">
       <div class="results-head">
         <h2 id="res-titre">Résultat</h2>
-        <button type="button" class="ghost" id="copier" hidden>Copier le butin</button>
+        <div class="head-actions">
+          <button type="button" class="ghost" id="copier-joueurs" hidden>Texte pour les joueurs</button>
+          <button type="button" class="ghost" id="copier" hidden>Copier le butin</button>
+        </div>
       </div>
       <div id="sortie" aria-live="polite">
         <p class="vide">Choisis le niveau et ce que tu veux tirer, puis lance les dés.</p>
@@ -151,6 +154,9 @@
         <p class="lore-glose"></p>
         <p class="lore-txt"></p>
         <p class="item-orig"></p>
+        <p class="lore-sous">Indices visibles sur l'objet</p>
+        <ul class="lore-indices"></ul>
+        <p class="lore-complete"></p>
         <div class="lore-actions">
           <button type="button" class="ghost small lore-version">Autre nom et légende</button>
           <button type="button" class="ghost small lore-origine">Autre origine</button>
@@ -162,12 +168,20 @@
         <button type="button" class="ghost small jet-effet">Effet secondaire (2d6)</button>
         <p class="jet-out"></p>
       </div>
+      <details class="ident" hidden>
+        <summary>Identification</summary>
+        <p class="lore-sous">Ce que les PJ découvrent à l'usage</p>
+        <ul class="ident-percu"></ul>
+        <p class="lore-sous">Pour l'identifier</p>
+        <ul class="ident-tests"></ul>
+      </details>
       <ul class="item-notes"></ul>
       <p class="item-rappel"></p>
       <p class="item-alerte"></p>
       <div class="item-foot">
         <p class="item-val"></p>
         <div class="foot-actions">
+          <button type="button" class="ghost small joueurs">Texte joueurs</button>
           <button type="button" class="ghost small histoire">Lui donner une histoire</button>
           <button type="button" class="ghost small relancer">Relancer</button>
         </div>
@@ -187,6 +201,7 @@
 <script src="js/filtres.js"></script>
 <script src="js/equipement.js"></script>
 <script src="js/engine.js"></script>
+<script src="js/identification.js"></script>
 <script src="js/lore.js"></script>
 <script src="js/app.js"></script>
 </body>

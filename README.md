@@ -10,7 +10,7 @@ Une page statique, sans backend ni build : elle tourne sur GitHub Pages ou en ou
 - **Objet majeur / mineur** : niveau de magie visé d'après la table « Puissance d'un objet magique majeur » (colonne niveau/2 pour un objet mineur).
 - **Consommable** : potion, parchemin ou projectiles magiques.
 
-Le butin d'une rencontre détaille aussi la monnaie (pp, po, pa, pc) et l'équipement non magique récupérable, avec ses statistiques, son état et son encombrement. Chaque objet affiche son niveau de magie, ses effets, une description à lire aux joueurs, sa valeur et le détail des jets de dés. Chaque objet permanent peut recevoir une histoire à la demande du MJ (bouton « Lui donner une histoire ») : origine tirée sur la table du livre, nom et légende générés ; l'objet majeur d'une fin d'aventure est signalé comme candidat. Les potions ont leur jet d'effet secondaire. On peut relancer un objet seul, copier le butin en texte, et retrouver ou effacer les 20 derniers butins (stockés dans le navigateur).
+Le butin d'une rencontre détaille aussi la monnaie (pp, po, pa, pc) et l'équipement non magique récupérable, avec ses statistiques, son état et son encombrement. Chaque objet affiche son niveau de magie, ses effets, une description à lire aux joueurs, sa valeur et le détail des jets de dés. Chaque objet permanent peut recevoir une histoire à la demande du MJ (bouton « Lui donner une histoire ») : origine tirée sur la table du livre, nom et légende générés ; l'objet majeur d'une fin d'aventure est signalé comme candidat. Chaque objet indique ce que les PJ découvrent à l'usage (effets évidents ou cachés), comment l'identifier selon les règles du livre (difficultés calculées), et, s'il a une histoire, les indices visibles et où chercher sa légende complète. Un bouton copie le texte à donner aux joueurs, sans rien de la vue MJ. Les potions ont leur jet d'effet secondaire. On peut relancer un objet seul, copier le butin en texte, et retrouver ou effacer les 20 derniers butins (stockés dans le navigateur).
 
 ## D'où viennent les tables
 
@@ -18,6 +18,7 @@ Le butin d'une rencontre détaille aussi la monnaie (pp, po, pa, pc) et l'équip
 - `js/sources.js` : règles maison pour les sources de butin, le barème d'argent par NC, les gemmes, les objets d'art et les trouvailles. Inspiré des types de trésor d'AD&D et du trésor individuel / de repaire de D&D 5e, recalibré sur l'économie de COF. À ajuster librement.
 - `js/equipement.js` : armes et armures du livre (DM, DEF, AGI max, prix), encombrement de l'Atlas ; états, kits par source et répartition de la monnaie en règles maison.
 - `js/filtres.js` : capacités écartées des objets de pouvoir (compagnons, traits de classe, bonus de caractéristique…) et formes d'objet par voie.
+- `js/identification.js` : effets évidents ou cachés, tests d'identification du livre, indices tirés de l'origine, texte pour les joueurs.
 - `js/lore.js` : générateur de noms et de légendes (gabarits, noyaux par type d'objet, thèmes, syllabes par peuple, artisans, accroches).
 - `js/maison.js` : autres règles maison (poids des catégories, objets de compétence, descriptions).
 

@@ -120,6 +120,17 @@
         box.querySelector(".jet-out").innerHTML = `<span class="de">2d6 <i>${esc(r.v)}</i></span> : ${esc(r.txt)}`;
       });
     }
+    const percu = IDENT.perceptions(o), testsId = IDENT.tests(o);
+    if (percu.length || testsId.length) {
+      const id = n.querySelector(".ident");
+      id.hidden = false;
+      id.querySelector(".ident-percu").innerHTML = percu.map(p =>
+        `<li><span class="tag ${p.evident ? "tag-vu" : "tag-cache"}">${p.evident ? "évident" : "caché"}</span> ${esc(p.effet.replace(/\.$/, ""))} : ${esc(p.comment)}</li>`).join("");
+      if (!percu.length) id.querySelector(".ident-percu").previousElementSibling.remove();
+      id.querySelector(".ident-tests").innerHTML = testsId.map(t => `<li>${esc(t)}</li>`).join("");
+    }
+    const bj = n.querySelector(".joueurs");
+    if (bj) bj.addEventListener("click", () => copier(IDENT.texteJoueurs(o), "Texte joueurs copié"));
     n.querySelector(".item-rappel").textContent = (o.rappel || []).join(" ");
     n.querySelector(".item-trouv").innerHTML = (o.trouvailles || []).map(e => `<li>${esc(e)}</li>`).join("");
     n.querySelector(".item-notes").innerHTML = (o.notes || []).map(e => `<li>${esc(e)}</li>`).join("");
@@ -135,6 +146,9 @@
       n.querySelector(".lore-txt").textContent = o.lore.legende.join(" ");
       n.querySelector(".item-orig").innerHTML =
         `<b>Origine (3d10) :</b> ${esc(o.lore.origine.provenance)}, ${esc(o.lore.origine.epoque)}, ${esc(o.lore.origine.peuple)}.`;
+      n.querySelector(".lore-indices").innerHTML = IDENT.indices(o).map(i =>
+        `<li><b>${esc(cap(i.voir))}.</b> ${esc(i.comprendre)}</li>`).join("");
+      n.querySelector(".lore-complete").textContent = IDENT.legendeComplete(o);
       if (btnH) btnH.remove();
       n.querySelector(".lore-version").addEventListener("click", () => majLore(idx, LORE.renommer(o, o.lore, dejaUtilises())));
       n.querySelector(".lore-origine").addEventListener("click", () => majLore(idx, LORE.histoire(o, dejaUtilises())));
@@ -164,6 +178,7 @@
     if (!lot.length) { sortie.innerHTML = '<p class="vide">Rien tiré cette fois : relance les dés.</p>'; return; }
     lot.forEach((o, i) => sortie.appendChild(carte(o, i)));
     $("#copier").hidden = false;
+    $("#copier-joueurs").hidden = false;
   }
 
   /* Noms et phrases déjà donnés (historique + butin affiché), pour ne pas les resservir */
@@ -179,7 +194,8 @@
   }
 
   function majLore(i, lore) {
-    if (lore) courant[i].lore = lore; else delete courant[i].lore;
+    if (lore) { courant[i].lore = lore; lore.indices = IDENT.indices(courant[i]); }
+    else delete courant[i].lore;
     sortie.classList.remove("nouveau");
     sortie.children[i].replaceWith(carte(courant[i], i));
     majEntree();
@@ -277,6 +293,23 @@
       return l.join("\n");
     }).join("\n\n");
   }
+  async function copier(txt, ok) {
+    try { await navigator.clipboard.writeText(txt); toast(ok); }
+    catch (e) {
+      const ta = document.createElement("textarea"); ta.value = txt; document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy"); toast(ok); } catch (_) { toast("Copie impossible dans ce navigateur"); }
+      ta.remove();
+    }
+  }
+  $("#copier-joueurs").addEventListener("click", () => {
+    const blocs = courant.map(o => {
+      const t = IDENT.texteJoueurs(o);
+      if (!t) return "";
+      const titre = o.bourse ? "Argent et objets de valeur" : o.equip ? "Équipement" : cap(IDENT.forme(o));
+      return "• " + titre + "\n  " + t.split("\n").join("\n  ");
+    }).filter(Boolean);
+    copier(blocs.join("\n\n"), "Texte pour les joueurs copié");
+  });
   $("#copier").addEventListener("click", async () => {
     const txt = enTexte(courant);
     try { await navigator.clipboard.writeText(txt); toast("Butin copié"); }
