@@ -16,6 +16,7 @@ Chaque objet affiche son niveau de magie, ses effets, une description à lire au
 
 - `js/tables.js` et `js/voies.js` : tables et voies du livre de base COF 2e édition, © Black Book Éditions.
 - `js/sources.js` : règles maison pour les sources de butin, le barème d'argent par NC, les gemmes, les objets d'art et les trouvailles. Inspiré des types de trésor d'AD&D et du trésor individuel / de repaire de D&D 5e, recalibré sur l'économie de COF. À ajuster librement.
+- `js/filtres.js` : capacités écartées des objets de pouvoir (compagnons, traits de classe, bonus de caractéristique…) et formes d'objet par voie.
 - `js/maison.js` : autres règles maison (poids des catégories, objets de compétence, descriptions).
 
 Deux choix d'interprétation :

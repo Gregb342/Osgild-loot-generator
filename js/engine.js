@@ -1,7 +1,7 @@
 /* Moteur de tirage. Aucune dépendance, aucun réseau. */
 (function () {
   "use strict";
-  const T = window.LIVRE, M = window.MAISON, V = window.VOIES;
+  const T = window.LIVRE, M = window.MAISON, V = window.VOIES, F = window.FILTRES;
 
   /* ---------- dés ---------- */
   function d(n) {
@@ -77,10 +77,24 @@
   const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
 
   /* ---------- sorts (parchemins, baguettes) ---------- */
-  function tirerSort(log, type) {
+  /* Voies de sorts admises pour la source (sinon la table du livre) */
+  function tableSorts(profils) {
+    if (!profils) return null;
+    const t = T.voieParchemin.filter(r => profils[r[2][0]]);
+    return t.length ? t : null;
+  }
+  function tirerSort(log, type, profils) {
+    const filtre = tableSorts(profils);
     for (let essai = 0; essai < 30; essai++) {
-      const vr = roll(log, 20, T.voieParchemin, "voie du sort");
-      const [profil, nomVoie] = vr.res;
+      let profil, nomVoie;
+      if (filtre) {
+        const w = {}; filtre.forEach((r, i) => { w[i] = profils[r[2][0]]; });
+        [profil, nomVoie] = filtre[+pickW(w)][2];
+        log.push({ de: "", v: "", txt: "voie du sort, parmi celles qui conviennent à la source : " + joliVoie(nomVoie) });
+      } else {
+        const vr = roll(log, 20, T.voieParchemin, "voie du sort");
+        [profil, nomVoie] = vr.res;
+      }
       const rr = roll(log, 6, T.rangParchemin[type], "rang (objet " + type + ")");
       const rang = rr.res;
       const v = voie(profil, nomVoie);
@@ -111,7 +125,7 @@
 
   G.parchemin = function (ctx, log) {
     const type = ctx.niveau >= 6 ? "moyen" : "mineur";
-    const s = tirerSort(log, type);
+    const s = tirerSort(log, type, ctx.profils);
     if (!s) return null;
     return {
       cat: "Parchemin", nom: "Parchemin : " + s.sort, nm: 0,
@@ -202,29 +216,60 @@
     };
   };
 
+  const EXCLUES = new Set((F ? F.exclues : []).map(x => norm(x)));
+  const objectable = c => !EXCLUES.has(norm(c[0]));
+  function formeVoie(nomVoie) {
+    if (!F) return null;
+    const k = Object.keys(F.formes).find(x => norm(x) === norm(nomVoie));
+    return k ? any(F.formes[k]) : null;
+  }
+
   G.pouvoir = function (ctx, log) {
     const nm = Math.max(1, ctx.nm);
     let rang = roll(log, 8, T.rangPouvoir, "rang du pouvoir").res;
     if (rang > Math.min(5, nm)) { log.push({ de: "", v: "", txt: "plafonné au rang " + Math.min(5, nm) + " (niveau de magie visé)" }); rang = Math.min(5, nm); }
-    const profil = roll(log, 20, T.profilPouvoir, "profil du pouvoir").res;
-    const voies = Object.entries(V[profil]);
-    const [nomVoie, caps] = any(voies);
-    const capa = caps[rang - 1];
+    let profil, choix = null;
+    for (let essai = 0; essai < 20 && !choix; essai++) {
+      if (ctx.profils) {
+        profil = pickW(ctx.profils);
+        log.push({ de: "", v: "", txt: "profil du pouvoir, parmi ceux qui conviennent à la source : " + profil });
+      } else profil = roll(log, 20, T.profilPouvoir, "profil du pouvoir").res;
+      // capacités du profil reproductibles par un objet, au rang voulu ou en dessous
+      for (let r = rang; r >= 1 && !choix; r--) {
+        const ok = Object.entries(V[profil]).filter(([, c]) => objectable(c[r - 1]));
+        if (ok.length) { const [v, c] = any(ok); choix = { v, capa: c[r - 1], r }; }
+      }
+      if (!choix) log.push({ de: "", v: "", txt: "rien dans ce profil ne se prête à un objet à ce rang : on relance" });
+    }
+    if (!choix) return null;
+    if (choix.r < rang) log.push({ de: "", v: "", txt: "aucune capacité de rang " + rang + " ne se prête à un objet : rang " + choix.r });
+    const ecartees = Object.values(V[profil]).filter(c => !objectable(c[rang - 1])).length;
+    if (ecartees) log.push({ de: "", v: "", txt: ecartees + " capacité(s) écartée(s) car elles ne se prêtent pas à un objet" });
+    const forme = formeVoie(choix.v);
+    const nomForme = forme ? cap(forme) : "Objet de pouvoir";
     return {
-      cat: "Objet de pouvoir", nom: "Objet de pouvoir : " + capa[0], nm: rang,
-      effets: ["Reproduit " + capa[0] + " (rang " + rang + ", " + joliVoie(nomVoie) + ", " + profil + ").",
-        "En général une fois par jour ; activation : action gratuite, ou d'attaque pour un pouvoir offensif.",
-        "Suggestion tirée au hasard dans le profil : le MJ valide qu'elle se prête à un objet."],
-      valeur: valeurNM(rang), apparence: descObjet()
+      cat: "Objet de pouvoir", nom: nomForme + " : " + choix.capa[0], nm: choix.r,
+      effets: ["Reproduit " + choix.capa[0] + " (rang " + choix.r + ", " + joliVoie(choix.v) + ", " + profil + ").",
+        "En général une fois par jour ; activation : action gratuite, ou d'attaque pour un pouvoir offensif."],
+      valeur: valeurNM(choix.r), apparence: descObjet()
     };
   };
 
   G.grimoire = function (ctx, log) {
     const nm = Math.max(1, ctx.nm);
-    const fam = d(2) === 1 ? "profane" : "divine";
-    log.push({ de: "d2", v: fam === "profane" ? 1 : 2, txt: "magie " + fam });
-    const profils = T.familles[fam].filter(p => Object.values(V[p]).some(c => c.some(x => x[1])));
-    const profil = any(profils);
+    const lanceurs = p => Object.values(V[p]).some(c => c.some(x => x[1]));
+    let fam, profil;
+    const admis = ctx.profils ? Object.keys(ctx.profils).filter(p => lanceurs(p) && (T.familles.profane.includes(p) || T.familles.divine.includes(p))) : [];
+    if (admis.length) {
+      const w = {}; admis.forEach(p => { w[p] = ctx.profils[p]; });
+      profil = pickW(w);
+      fam = T.familles.profane.includes(profil) ? "profane" : "divine";
+      log.push({ de: "", v: "", txt: "grimoire de " + profil.toLowerCase() + ", cohérent avec la source" });
+    } else {
+      fam = d(2) === 1 ? "profane" : "divine";
+      log.push({ de: "d2", v: fam === "profane" ? 1 : 2, txt: "magie " + fam });
+      profil = any(T.familles[fam].filter(lanceurs));
+    }
     const sorts = [];
     Object.entries(V[profil]).forEach(([v, c]) => c.forEach((x, i) => { if (x[1]) sorts.push({ n: x[0], r: i + 1, v }); }));
     const cible = nm * 3; let somme = 0; const choix = [];
@@ -281,7 +326,7 @@
 
   G.baguette = function (ctx, log) {
     const type = ctx.nm <= 2 ? "mineur" : "moyen";
-    const s = tirerSort(log, type);
+    const s = tirerSort(log, type, ctx.profils);
     if (!s) return null;
     const ch = nd(2, 20);
     log.push({ de: "2d20", v: ch.r.join(" + ") + " = " + ch.s, txt: "charges" });
@@ -314,7 +359,7 @@
       nm = 1;
       alertes.push("Au-dessus de la recommandation du livre pour ce niveau (consommables seulement).");
     }
-    const it = G[cat]({ niveau, cadre, nm }, log);
+    const it = G[cat]({ niveau, cadre, nm, profils: opts.profils }, log);
     if (!it) return null;
     it.log = log;
     it.cible = cible;
@@ -420,7 +465,7 @@
     /* objets magiques */
     const m = src.magie, pm = S.magie[ampleur];
     const fixe = Object.assign({}, src.origine || {}, src.origineAncienne ? { ancienne: true } : {});
-    const base = { niveau, cadre, poidsPerm: src.perm, poidsConso: src.conso, origine: fixe };
+    const base = { niveau, cadre, poidsPerm: src.perm, poidsConso: src.conso, origine: fixe, profils: src.profils };
     const rangs = [];
     if (ampleur === "fin") { rangs.push(m >= 0.5 ? "majeur" : "mineur"); if (pct(pm.mineur * m)) rangs.push("mineur"); }
     else if (ampleur === "repaire") { if (pct(pm.majeur * m)) rangs.push("majeur"); else if (pct(pm.mineur * m)) rangs.push("mineur"); }

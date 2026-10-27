@@ -60,6 +60,7 @@ window.SOURCES = {
       id: "pillards", nom: "Pillards (gobelins, kobolds)",
       aide: "Petites créatures qui chapardent : beaucoup de cuivre, des babioles, du matériel de mauvaise qualité.",
       richesse: { corps: 0.2, repaire: 0.5, fin: 0.6 }, gemmes: 0.3, art: 0.2, magie: 0.4,
+      profils: { Voleur: 2, Barbare: 1, Druide: 1, Sorcier: 1 }, // pouvoirs, grimoires, parchemins et baguettes
       perm: { arme: 40, defense: 30, competence: 15, pouvoir: 15 },
       conso: { potion: 60, parchemin: 10, projectiles: 30 },
       special: ["cuivre"],
@@ -78,6 +79,7 @@ window.SOURCES = {
       id: "bandits", nom: "Bandits de grand chemin",
       aide: "Bourses volées aux voyageurs, armes correctes, parfois une potion.",
       richesse: { corps: 1.2, repaire: 1.2, fin: 1.2 }, gemmes: 0.6, art: 0.5, magie: 0.6,
+      profils: { Voleur: 3, Rôdeur: 2, Guerrier: 1, Barde: 1 }, // pouvoirs, grimoires, parchemins et baguettes
       perm: { arme: 40, defense: 25, competence: 20, pouvoir: 15 },
       conso: { potion: 70, projectiles: 30 },
       special: [],
@@ -96,6 +98,7 @@ window.SOURCES = {
       id: "soldats", nom: "Soldats, gardes",
       aide: "Leur solde, de l'équipement de qualité, une clé ou des ordres.",
       richesse: { corps: 1, repaire: 0.8, fin: 1 }, gemmes: 0.3, art: 0.4, magie: 0.5,
+      profils: { Guerrier: 3, Chevalier: 2, Prêtre: 1 }, // pouvoirs, grimoires, parchemins et baguettes
       perm: { arme: 45, defense: 45, puissance: 10 },
       conso: { potion: 70, projectiles: 30 },
       special: [],
@@ -114,6 +117,7 @@ window.SOURCES = {
       id: "armee", nom: "Armée en campagne (orques, gnolls)",
       aide: "Fruits du pillage des villages, trophées, solde de guerre. Beaucoup de choses encombrantes.",
       richesse: { corps: 0.6, repaire: 1, fin: 1.2 }, gemmes: 0.4, art: 0.6, magie: 0.5,
+      profils: { Barbare: 3, Guerrier: 2, Sorcier: 1, Druide: 1 }, // pouvoirs, grimoires, parchemins et baguettes
       perm: { arme: 40, defense: 30, pouvoir: 20, puissance: 10 },
       conso: { potion: 60, parchemin: 10, projectiles: 30 },
       special: ["encombrant"],
@@ -132,6 +136,7 @@ window.SOURCES = {
       id: "marchands", nom: "Marchands, caravane",
       aide: "De la vraie richesse, mais surtout en marchandises lourdes à transporter et à revendre.",
       richesse: { corps: 1.5, repaire: 1.5, fin: 1.8 }, gemmes: 0.5, art: 0.6, magie: 0.5,
+      profils: { Forgesort: 2, Barde: 2, Magicien: 1, Prêtre: 1, Arquebusier: 1 }, // pouvoirs, grimoires, parchemins et baguettes
       perm: { competence: 25, pouvoir: 25, puissance: 15, arme: 15, defense: 10, baguette: 10 },
       conso: { potion: 60, parchemin: 40 },
       special: ["encombrant"],
@@ -150,6 +155,7 @@ window.SOURCES = {
       id: "faussaires", nom: "Faussaires, guilde de voleurs",
       aide: "Beaucoup de pièces, mais une partie est fausse : test de PER pour la repérer.",
       richesse: { corps: 2, repaire: 2.2, fin: 2.2 }, gemmes: 0.5, art: 0.5, magie: 0.5,
+      profils: { Voleur: 3, Barde: 2, Ensorceleur: 1 }, // pouvoirs, grimoires, parchemins et baguettes
       perm: { competence: 40, pouvoir: 30, arme: 30 },
       conso: { potion: 70, parchemin: 30 },
       special: ["fausse"],
@@ -167,6 +173,7 @@ window.SOURCES = {
       id: "culte", nom: "Culte, temple",
       aide: "Objets rituels, offrandes, potions de soins et parchemins divins.",
       richesse: { corps: 0.6, repaire: 1, fin: 1.2 }, gemmes: 0.6, art: 0.9, magie: 0.8,
+      profils: { Prêtre: 4, Sorcier: 3, Druide: 1, Moine: 1 }, // pouvoirs, grimoires, parchemins et baguettes
       perm: { pouvoir: 35, grimoire: 25, defense: 15, baguette: 15, arme: 10 },
       conso: { potion: 60, parchemin: 40 },
       special: [],
@@ -185,6 +192,7 @@ window.SOURCES = {
       id: "geants", nom: "Géants, ogres",
       aide: "Le sac du géant : un bric-à-brac de gros objets et de trophées, avec parfois une vraie pièce de valeur.",
       richesse: { corps: 0.8, repaire: 1.2, fin: 1.4 }, gemmes: 0.6, art: 0.7, magie: 0.5,
+      profils: { Barbare: 3, Guerrier: 1, Druide: 1 }, // pouvoirs, grimoires, parchemins et baguettes
       perm: { arme: 35, defense: 25, puissance: 20, pouvoir: 20 },
       conso: { potion: 70, projectiles: 30 },
       special: ["encombrant"],
@@ -244,6 +252,7 @@ window.SOURCES = {
       id: "elfes-noirs", nom: "Elfes noirs, monde souterrain",
       aide: "Monnaie étrangère, poisons, armes et bijoux exotiques, dangereux à exhiber en surface.",
       richesse: { corps: 1.5, repaire: 1.6, fin: 2 }, gemmes: 1, art: 0.8, magie: 0.9,
+      profils: { Sorcier: 3, Ensorceleur: 2, Voleur: 2, Prêtre: 1, Magicien: 1 }, // pouvoirs, grimoires, parchemins et baguettes
       perm: { arme: 30, defense: 20, pouvoir: 25, baguette: 15, grimoire: 10 },
       conso: { potion: 60, parchemin: 40 },
       special: ["etrangere"],
@@ -262,6 +271,7 @@ window.SOURCES = {
       id: "fees", nom: "Fées, ombre féérique",
       aide: "Trésors trompeurs : l'or peut redevenir feuilles mortes à l'aube. Objets étranges.",
       richesse: { corps: 0.8, repaire: 1.4, fin: 1.6 }, gemmes: 1, art: 0.6, magie: 1,
+      profils: { Ensorceleur: 4, Druide: 3, Barde: 2 }, // pouvoirs, grimoires, parchemins et baguettes
       perm: { pouvoir: 40, competence: 25, baguette: 20, puissance: 15 },
       conso: { potion: 70, parchemin: 30 },
       special: ["fees"],
@@ -280,6 +290,7 @@ window.SOURCES = {
       id: "sorcier", nom: "Tour de sorcier",
       aide: "Peu d'or, mais des parchemins, des baguettes, un grimoire, des composants.",
       richesse: { corps: 0.8, repaire: 0.8, fin: 1 }, gemmes: 0.8, art: 0.5, magie: 1.4,
+      profils: { Magicien: 4, Ensorceleur: 3, Sorcier: 3, Forgesort: 2 }, // pouvoirs, grimoires, parchemins et baguettes
       perm: { baguette: 30, grimoire: 25, pouvoir: 25, puissance: 10, defense: 10 },
       conso: { potion: 40, parchemin: 60 },
       special: [],
@@ -298,6 +309,7 @@ window.SOURCES = {
       id: "tombeau", nom: "Tombeau, ruine ancienne",
       aide: "Monnaie et objets d'art d'une autre époque, objets magiques à l'origine ancienne.",
       richesse: { corps: 0.3, repaire: 1.4, fin: 1.8 }, gemmes: 0.8, art: 1.4, magie: 0.9,
+      profils: { Prêtre: 2, Sorcier: 2, Chevalier: 2, Magicien: 1, Guerrier: 1 }, // pouvoirs, grimoires, parchemins et baguettes
       perm: { arme: 30, defense: 25, pouvoir: 20, puissance: 15, grimoire: 10 },
       conso: { potion: 30, parchemin: 50, projectiles: 20 },
       special: ["ancienne"],
