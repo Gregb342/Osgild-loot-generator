@@ -136,12 +136,12 @@
       n.querySelector(".item-orig").innerHTML =
         `<b>Origine (3d10) :</b> ${esc(o.lore.origine.provenance)}, ${esc(o.lore.origine.epoque)}, ${esc(o.lore.origine.peuple)}.`;
       if (btnH) btnH.remove();
-      n.querySelector(".lore-version").addEventListener("click", () => majLore(idx, LORE.renommer(o, o.lore)));
-      n.querySelector(".lore-origine").addEventListener("click", () => majLore(idx, LORE.histoire(o)));
+      n.querySelector(".lore-version").addEventListener("click", () => majLore(idx, LORE.renommer(o, o.lore, dejaUtilises())));
+      n.querySelector(".lore-origine").addEventListener("click", () => majLore(idx, LORE.histoire(o, dejaUtilises())));
       n.querySelector(".lore-retirer").addEventListener("click", () => majLore(idx, null));
     } else {
       if (o.candidat) n.querySelector(".item-candidat").textContent = "Objet marquant de cette aventure : il mérite peut-être une histoire.";
-      if (btnH) btnH.addEventListener("click", () => majLore(idx, LORE.histoire(o)));
+      if (btnH) btnH.addEventListener("click", () => majLore(idx, LORE.histoire(o, dejaUtilises())));
     }
     n.querySelector(".item-alerte").textContent = (o.alertes || []).join(" ");
     const valeur = n.querySelector(".item-val");
@@ -164,6 +164,18 @@
     if (!lot.length) { sortie.innerHTML = '<p class="vide">Rien tiré cette fois : relance les dés.</p>'; return; }
     lot.forEach((o, i) => sortie.appendChild(carte(o, i)));
     $("#copier").hidden = false;
+  }
+
+  /* Noms et phrases déjà donnés (historique + butin affiché), pour ne pas les resservir */
+  function dejaUtilises() {
+    const noms = new Set(), textes = new Set();
+    const lots = store.get("histo", []).map(e => e.lot).concat([courant]);
+    lots.forEach(lot => (lot || []).forEach(o => {
+      if (!o.lore) return;
+      noms.add(o.lore.nom);
+      (o.lore.modeles || []).forEach(t => textes.add(t));
+    }));
+    return { noms, textes };
   }
 
   function majLore(i, lore) {
