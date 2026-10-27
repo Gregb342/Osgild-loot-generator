@@ -141,10 +141,18 @@
   function majHisto() {
     const h = store.get("histo", []);
     const ol = $("#histo");
+    $("#vider-histo").hidden = !h.length;
     if (!h.length) { ol.innerHTML = "<li>Aucun butin pour l'instant.</li>"; return; }
     ol.innerHTML = h.map((e, i) => `<li><button type="button" data-h="${i}">${esc(e.titre)}</button>
       <small>${new Date(e.t).toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" })} : ${esc(e.lot.map(o => o.nom).join(", "))}</small></li>`).join("");
   }
+  $("#vider-histo").addEventListener("click", () => {
+    const n = store.get("histo", []).length;
+    if (!confirm(`Supprimer les ${n} butin${n > 1 ? "s" : ""} de l'historique ?`)) return;
+    store.set("histo", []);
+    majHisto();
+    toast("Historique vidé");
+  });
   $("#histo").addEventListener("click", e => {
     const b = e.target.closest("[data-h]");
     if (!b) return;

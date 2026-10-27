@@ -172,3 +172,5 @@ select {
 
 .foot { color: var(--gris); font-size: .9rem; padding: 2.5rem 0 2rem; max-width: 46rem; }
 .toast { position: fixed; left: 50%; bottom: 1.25rem; transform: translateX(-50%); background: var(--encre); color: var(--velin); padding: .6rem 1rem; border-radius: 999px; font-size: .95rem; }
+#vider-histo { margin-top: .9rem; }
+#vider-histo:hover { border-color: var(--sceau); color: var(--sceau); }
