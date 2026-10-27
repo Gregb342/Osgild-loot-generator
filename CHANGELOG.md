@@ -1,5 +1,12 @@
 # Nouveautés
 
+## 0.2.0 bêta (27 octobre 2026)
+
+- **Objets exotiques** (règle maison, hors règles du livre, clairement signalés) : une centaine d'effets originaux, narratifs, à double tranchant ou inquiétants, chacun lié à une puissance d'Osgild dont il découle (divinités protectrices et maléfiques de l'Atlas, Puissances, saisons, Seigneurs des animaux, Roi-Sorcier, ombre féérique).
+- Chaque objet exotique a son arbitrage en termes COF, ses usages, parfois un caprice, des signes visibles (dont les signes inquiétants des objets sombres) et, pour les objets de chaos et de folie (Agag, Lucérion), une table d'effets aléatoires avec son bouton de jet.
+- Nouveau mode « Objet exotique », avec choix du patron ou tirage au hasard.
+- Dans le butin d'une rencontre : option « Objets exotiques » (jamais par défaut, rares, fréquents), plus probables chez les fées, dans une tour de sorcier, un tombeau ou un culte.
+
 ## 0.1.0 bêta (27 octobre 2026)
 
 Première version publique.

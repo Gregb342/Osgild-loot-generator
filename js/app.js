@@ -26,7 +26,8 @@
       nombre: Math.min(8, Math.max(1, parseInt(f.get("nombre"), 10) || 1)),
       source: f.get("source"), ampleur: f.get("ampleur"), menace: f.get("menace"),
       adversaires: Math.min(30, Math.max(1, parseInt(f.get("adversaires"), 10) || 1)),
-      nc: f.get("nc") === "" || isNaN(parseFloat(f.get("nc"))) ? "" : Math.max(0, parseFloat(f.get("nc")))
+      nc: f.get("nc") === "" || isNaN(parseFloat(f.get("nc"))) ? "" : Math.max(0, parseFloat(f.get("nc"))),
+      exotiques: f.get("exotiques") || "jamais", patron: f.get("patron") || ""
     };
   }
 
@@ -41,9 +42,11 @@
   function majForm() {
     const v = val();
     const objets = ["majeur", "mineur", "consommable"].includes(v.mode);
+    const exo = v.mode === "exotique";
     $("#f-cat").hidden = !objets;
-    $("#f-nb").hidden = !objets;
-    $("#f-renc").hidden = objets;
+    $("#f-nb").hidden = !(objets || exo);
+    $("#f-renc").hidden = v.mode !== "rencontre";
+    $("#f-patron").hidden = !exo;
     if (objets) majCategories(v.mode);
     const src = S.liste.find(x => x.id === v.source);
     $("#aide-source").textContent = src ? src.aide : "";
@@ -58,6 +61,7 @@
 
   function nmTxt(x) { return x === "C" ? "consommables seulement" : x === 0 ? "aucun objet magique" : "niveau de magie " + x; }
   function texteCible(v) {
+    if (v.mode === "exotique") return "Objet <strong>hors règles du livre</strong> : effet original, narratif ou inquiétant, sans bonus chiffré permanent en combat. À arbitrer par le MJ.";
     if (v.mode === "rencontre") {
       const nc = M.ncRencontre(v.niveau, v.menace, v.nc);
       const maj = M.nmCible(v.niveau, v.cadre, "majeur");
@@ -82,7 +86,12 @@
   let courant = [];
 
   function tirer(v) {
-    if (v.mode === "rencontre") return M.rencontre({ niveau: v.niveau, cadre: v.cadre, source: v.source, ampleur: v.ampleur, menace: v.menace, ncPrecis: v.nc, nombre: v.adversaires });
+    if (v.mode === "rencontre") return M.rencontre({ niveau: v.niveau, cadre: v.cadre, source: v.source, ampleur: v.ampleur, menace: v.menace, ncPrecis: v.nc, nombre: v.adversaires, exotiques: v.exotiques });
+    if (v.mode === "exotique") {
+      const out = [];
+      for (let i = 0; i < v.nombre; i++) { const o = M.objet({ exotique: true, patron: v.patron || null }); if (o) out.push(o); }
+      return out;
+    }
     const out = [];
     for (let i = 0; i < v.nombre; i++) {
       const o = M.objet({ niveau: v.niveau, cadre: v.cadre, rang: v.mode, categorie: v.categorie });
@@ -95,11 +104,25 @@
     const n = tpl.content.firstElementChild.cloneNode(true);
     const sceau = n.querySelector(".sceau"), s = sceau.querySelector("span");
     if (o.bourse) { sceau.classList.add("or"); s.textContent = "or"; }
+    else if (o.exotique) { sceau.classList.add("exo"); s.textContent = "✶"; }
     else if (o.equip) { sceau.classList.add("equip"); s.innerHTML = '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5 3 6V3h3l11.5 11.5"/><path d="m13 19 6-6"/><path d="m16 16 4 4"/><path d="m19 21 2-2"/><path d="M9.5 17.5 21 6V3h-3L6.5 14.5"/><path d="m11 19-6-6"/><path d="m8 16-4 4"/><path d="m5 21-2-2"/></svg>'; }
     else if (o.consommable || !o.nm) { sceau.classList.add("conso"); s.textContent = "C"; }
     else s.textContent = o.nm;
-    sceau.title = o.bourse ? "Argent et valeurs" : o.equip ? "Équipement non magique" : (o.consommable || !o.nm) ? "Consommable : niveau de magie 0" : "Niveau de magie " + o.nm;
-    n.querySelector(".item-cat").textContent = o.source ? o.source + ", " + o.ampleur.toLowerCase() : o.cat;
+    sceau.title = o.exotique ? "Objet exotique, hors règles du livre" : o.bourse ? "Argent et valeurs" : o.equip ? "Équipement non magique" : (o.consommable || !o.nm) ? "Consommable : niveau de magie 0" : "Niveau de magie " + o.nm;
+    n.querySelector(".item-cat").textContent = o.exotique ? "Objet exotique (hors règles), lié à " + o.patron.nom + ", " + o.patron.dom
+      : o.source ? o.source + ", " + o.ampleur.toLowerCase() : o.cat;
+    if (o.table) {
+      const bt = n.querySelector(".item-table");
+      bt.hidden = false;
+      const de = o.table.length;
+      const b = bt.querySelector(".jet-table");
+      b.textContent = "Lancer 1d" + de + " sur la table";
+      bt.querySelector(".table-detail ol").innerHTML = o.table.map(t => `<li>${esc(t)}</li>`).join("");
+      b.addEventListener("click", () => {
+        const r = 1 + Math.floor(Math.random() * de);
+        bt.querySelector(".jet-out").innerHTML = `<span class="de">1d${de} <i>${r}</i></span> : ${esc(o.table[r - 1])}`;
+      });
+    }
     n.querySelector(".item-nom").textContent = o.nom;
     n.querySelector(".item-effets").innerHTML = o.effets.map(e => `<li>${esc(e)}</li>`).join("");
     if (o.equipement) {
@@ -162,6 +185,7 @@
     if (o.bourse) n.querySelector(".item-foot").remove();
     else if (o.equip) valeur.innerHTML = o.valeur ? `Valeur totale <b>${M.argent(o.valeur)}</b>, avant marchandage` : "";
     else if (o.valeur) valeur.innerHTML = `Valeur <b>${M.argent(o.valeur)}</b>${o.valeurNote ? " (" + esc(o.valeurNote) + ")" : ""}, revente ${M.argent(o.valeur / 2)} au plus`;
+    else if (o.exotique) valeur.textContent = "Hors marché : un collectionneur excentrique en offre ce qu'il veut, ou rien.";
     else valeur.textContent = "Valeur au choix du MJ";
     const rel = n.querySelector(".relancer");
     if (rel && o.req) rel.addEventListener("click", () => relancer(idx));
@@ -239,6 +263,7 @@
       const nc = M.ncRencontre(v.niveau, v.menace, v.nc);
       return `${src ? src.nom : "Rencontre"}, ${S.ampleur[v.ampleur].label.toLowerCase()}, NC ${nc === 0.5 ? "½" : nc}`;
     }
+    if (v.mode === "exotique") return "Objet exotique" + (v.nombre > 1 ? " × " + v.nombre : "");
     const quoi = { majeur: "Objet majeur", mineur: "Objet mineur", consommable: "Consommable" }[v.mode] || "Tirage";
     return `${quoi}, niveau ${v.niveau}, ${CADRES[v.cadre]}`;
   }
@@ -331,16 +356,19 @@
 
   /* ---------- démarrage ---------- */
   $("#source").innerHTML = S.liste.map(x => `<option value="${x.id}">${esc(x.nom)}</option>`).join("");
+  const X = window.EXOTIQUES;
+  if (X) $("#patron").innerHTML = '<option value="">Au hasard</option>' + X.patrons.map(p => `<option value="${p.id}">${esc(cap(p.nom))} (${esc(p.dom)})</option>`).join("");
   $("#nc-effacer").addEventListener("click", () => { form.nc.value = ""; majForm(); form.nc.focus(); });
   const prev = store.get("form", null);
   if (prev) {
     if (prev.mode === "butin" || prev.mode === "bourse") prev.mode = "rencontre";
     form.niveau.value = prev.niveau || 3;
-    ["cadre", "mode", "ampleur", "menace"].forEach(k => { const r = form.querySelector(`input[name="${k}"][value="${prev[k]}"]`); if (r) r.checked = true; });
+    ["cadre", "mode", "ampleur", "menace", "exotiques"].forEach(k => { const r = form.querySelector(`input[name="${k}"][value="${prev[k]}"]`); if (r) r.checked = true; });
     form.nombre.value = prev.nombre || 1;
     form.adversaires.value = prev.adversaires || 3;
     form.nc.value = prev.nc === undefined ? "" : prev.nc;
     if (prev.source && S.liste.some(x => x.id === prev.source)) form.source.value = prev.source;
+    if (prev.patron && X && X.patrons.some(p => p.id === prev.patron)) form.patron.value = prev.patron;
   }
   majForm();
   if (prev && prev.categorie) { $("#categorie").value = prev.categorie; if (!$("#categorie").value) $("#categorie").value = "hasard"; }

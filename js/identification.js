@@ -57,6 +57,10 @@
   function regle(e) { return REGLES.find(r => r[0].test(e)); }
 
   function perceptions(item) {
+    if (item.exotique) {
+      const e = item.effets[0];
+      return [{ effet: e, evident: item.visible, comment: item.visible ? "Évident dès la première utilisation." : "Se découvre en l'utilisant, par hasard ou par identification.", joueur: item.visible ? e : null }];
+    }
     return (item.effets || []).map(e => {
       const r = regle(e);
       if (!r || r[1] === null) return null;
@@ -66,6 +70,12 @@
 
   function tests(item) {
     const nm = item.nm || 0, t = [];
+    if (item.exotique) {
+      t.push("Un prêtre ou un fidèle de " + item.patron.nom + " reconnaît sa marque (test d'INT ou de VOL difficulté 12) et devine la nature de l'effet.");
+      t.push("Un lanceur de sorts peut tenter de l'analyser en une récupération rapide : test d'attaque magique difficulté 15 (règle maison, ces objets échappent aux règles d'identification du livre).");
+      t.push("Un érudit des cultes (INT difficulté 15) reconnaît le symbole et sait à quelle puissance l'objet est lié.");
+      return t;
+    }
     if (item.cat === "Potion") {
       const rang = parseInt((item.valeurNote || "").replace(/\D/g, ""), 10) || 1;
       t.push("Forgesort (voie des élixirs) : test d'INT difficulté " + (5 + 5 * rang) + ", 10 minutes.");
@@ -147,6 +157,7 @@
       case "Potion": return "une fiole";
       case "Parchemin": return "un parchemin";
       case "Projectiles": return n.replace(/ \+\d.*$/, "");
+      case "Objet exotique": return (item.apparence || "un objet étrange").split(" ; ")[0];
       default: return "un objet";
     }
   }

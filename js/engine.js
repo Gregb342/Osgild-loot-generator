@@ -487,11 +487,42 @@
     };
   };
 
+  /* ---------- objets exotiques (règle maison, hors règles du livre) ---------- */
+  function exotique(opts) {
+    const X = window.EXOTIQUES;
+    if (!X) return null;
+    const log = [];
+    let patron = opts.patron && X.patrons.find(p => p.id === opts.patron);
+    if (patron) log.push({ de: "", v: "", txt: "patron choisi : " + patron.nom });
+    else {
+      const w = {};
+      X.patrons.forEach((p, i) => { w[i] = opts.source ? (p.sources.includes(opts.source) ? 6 : 1) : 1; });
+      patron = X.patrons[+pickW(w)];
+      log.push({ de: "", v: "", txt: "patron : " + patron.nom + (opts.source && patron.sources.includes(opts.source) ? " (affinité avec la source)" : "") });
+    }
+    const ef = any(patron.effets);
+    const forme = any(ef.f);
+    const effets = [ef.t, "Arbitrage : " + ef.a, "Usages : " + ef.u];
+    const pCaprice = patron.ton === "fou" || patron.ton === "sombre" ? 0.7 : 0.4;
+    let caprice = null;
+    if (Math.random() < pCaprice) { caprice = any(X.caprices[patron.ton]); effets.push("Caprice : " + caprice); log.push({ de: "", v: "", txt: "caprice : " + caprice.toLowerCase() }); }
+    return {
+      cat: "Objet exotique", exotique: true, nom: cap(forme) + " " + ef.n, nm: null,
+      patron: { id: patron.id, nom: patron.nom, dom: patron.dom, ton: patron.ton },
+      effets, visible: !!ef.v, table: ef.table || null,
+      apparence: cap(forme) + " ; " + any(patron.signes) + ".",
+      valeur: null, valeurNote: "hors marché",
+      alertes: ["Hors règles du livre : objet exotique (règle maison), à arbitrer par le MJ."],
+      log, req: { exotique: true, patron: opts.patron || null, source: opts.source || null }
+    };
+  }
+
   const PERM = ["arme", "defense", "pouvoir", "puissance", "competence", "baguette", "grimoire"];
   const CONSO = ["potion", "parchemin", "projectiles"];
 
   /* ---------- un objet ---------- */
   function objet(opts) {
+    if (opts.exotique) return exotique(opts);
     const { niveau, cadre, rang } = opts;
     let cat = opts.categorie || "hasard";
     const log = [];
@@ -772,6 +803,14 @@
     });
     for (let i = 0; i < nbConso; i++) { const o = objet(Object.assign({ rang: "consommable" }, base)); if (o) { o.req = Object.assign({ rang: "consommable" }, base); objets.push(o); } }
 
+    /* objets exotiques, si le MJ les a activés */
+    const X = window.EXOTIQUES;
+    if (X && opts.exotiques && opts.exotiques !== "jamais") {
+      const p = Math.min(0.9, X.chance[ampleur] * (opts.exotiques === "frequents" ? X.multiplicateurFrequents : 1) * (X.exotisme[src.id] || 1));
+      const k = d(100);
+      log.push({ de: "d100", v: k, txt: "objet exotique si " + Math.round(p * 100) + " ou moins : " + (k <= Math.round(p * 100) ? "oui" : "non") });
+      if (k <= Math.round(p * 100)) { const o = exotique({ source: src.id }); if (o) objets.push(o); }
+    }
     return [carteArgent].concat(carteEquip ? [carteEquip] : [], objets);
   }
 

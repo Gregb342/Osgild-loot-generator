@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,500;0,700;1,400&family=Alegreya+Sans:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=0.1.0-beta">
+<link rel="stylesheet" href="css/style.css?v=0.2.0-beta">
 </head>
 <body>
 <div class="page">
@@ -45,6 +45,7 @@
           <label><input type="radio" name="mode" value="majeur"><span>Objet majeur</span></label>
           <label><input type="radio" name="mode" value="mineur"><span>Objet mineur</span></label>
           <label><input type="radio" name="mode" value="consommable"><span>Consommable</span></label>
+          <label><input type="radio" name="mode" value="exotique"><span>Objet exotique</span></label>
         </div>
       </fieldset>
 
@@ -83,6 +84,16 @@
           </div>
         </fieldset>
 
+        <fieldset class="field">
+          <legend>Objets exotiques <span class="facultatif">(hors règles)</span></legend>
+          <div class="seg" role="radiogroup">
+            <label><input type="radio" name="exotiques" value="jamais" checked><span>Jamais</span></label>
+            <label><input type="radio" name="exotiques" value="rares"><span>Rares</span></label>
+            <label><input type="radio" name="exotiques" value="frequents"><span>Fréquents</span></label>
+          </div>
+          <p class="aide">Des objets étranges, narratifs ou inquiétants, liés à une divinité ou une puissance d'Osgild. Règle maison, à arbitrer.</p>
+        </fieldset>
+
         <div class="field">
           <label for="nc">NC précis <span class="facultatif">(facultatif)</span></label>
           <div class="nc-row">
@@ -91,6 +102,12 @@
           </div>
           <p class="aide">Le NC de la rencontre si tu le connais : celui du bestiaire, ou celui d'un groupe (douze gnolls et leur chef font une rencontre NC 7).</p>
         </div>
+      </div>
+
+      <div class="field" id="f-patron" hidden>
+        <label for="patron">Lié à</label>
+        <select id="patron" name="patron"></select>
+        <p class="aide">Règle maison, hors règles du livre : l'effet découle du domaine de la divinité ou de la puissance.</p>
       </div>
 
       <div class="field" id="f-cat" hidden>
@@ -133,7 +150,7 @@
   </main>
 
   <footer class="foot">
-    <p class="version">Version <span id="version">0.1.0 bêta</span> · <a href="https://github.com/Gregb342/Osgild-loot-generator/blob/main/CHANGELOG.md">nouveautés</a> · <a href="https://github.com/Gregb342/Osgild-loot-generator/issues">signaler un problème</a></p>
+    <p class="version">Version <span id="version">0.2.0 bêta</span> · <a href="https://github.com/Gregb342/Osgild-loot-generator/blob/main/CHANGELOG.md">nouveautés</a> · <a href="https://github.com/Gregb342/Osgild-loot-generator/issues">signaler un problème</a></p>
     <p>Tables issues du livre de base de <i>Chroniques Oubliées Fantasy</i> 2<sup>e</sup> édition, © Black Book Éditions. Les sources de butin, l'argent, les gemmes, les trouvailles et les descriptions sont des règles maison, inspirées des tables de trésor de D&amp;D. Outil de fan, gratuit et non officiel.</p>
   </footer>
 </div>
@@ -176,6 +193,14 @@
         <p class="lore-sous">Pour l'identifier</p>
         <ul class="ident-tests"></ul>
       </details>
+      <div class="item-table" hidden>
+        <button type="button" class="ghost small jet-table"></button>
+        <p class="jet-out"></p>
+        <details class="table-detail">
+          <summary>Voir la table</summary>
+          <ol></ol>
+        </details>
+      </div>
       <ul class="item-notes"></ul>
       <p class="item-rappel"></p>
       <p class="item-alerte"></p>
@@ -195,15 +220,16 @@
   </article>
 </template>
 
-<script src="js/voies.js?v=0.1.0-beta"></script>
-<script src="js/tables.js?v=0.1.0-beta"></script>
-<script src="js/maison.js?v=0.1.0-beta"></script>
-<script src="js/sources.js?v=0.1.0-beta"></script>
-<script src="js/filtres.js?v=0.1.0-beta"></script>
-<script src="js/equipement.js?v=0.1.0-beta"></script>
-<script src="js/engine.js?v=0.1.0-beta"></script>
-<script src="js/identification.js?v=0.1.0-beta"></script>
-<script src="js/lore.js?v=0.1.0-beta"></script>
-<script src="js/app.js?v=0.1.0-beta"></script>
+<script src="js/voies.js?v=0.2.0-beta"></script>
+<script src="js/tables.js?v=0.2.0-beta"></script>
+<script src="js/maison.js?v=0.2.0-beta"></script>
+<script src="js/sources.js?v=0.2.0-beta"></script>
+<script src="js/filtres.js?v=0.2.0-beta"></script>
+<script src="js/exotiques.js?v=0.2.0-beta"></script>
+<script src="js/equipement.js?v=0.2.0-beta"></script>
+<script src="js/engine.js?v=0.2.0-beta"></script>
+<script src="js/identification.js?v=0.2.0-beta"></script>
+<script src="js/lore.js?v=0.2.0-beta"></script>
+<script src="js/app.js?v=0.2.0-beta"></script>
 </body>
 </html>
