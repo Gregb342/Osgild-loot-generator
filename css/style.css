@@ -9,6 +9,8 @@
   --laiton: #A97B22;      /* niveau de magie */
   --laiton-pale: #F1E4C4;
   --sceau: #9A3324;       /* alertes */
+  --curio: #6E3F78;       /* curiosités, hors règles */
+  --curio-pale: #F0E7F2;
   --serif: "Alegreya", Georgia, serif;
   --sans: "Alegreya Sans", system-ui, sans-serif;
   color-scheme: light;
@@ -17,12 +19,14 @@
   :root:not([data-theme="light"]) {
     --pierre: #141B20; --velin: #1C252C; --encre: #E4E8EA; --gris: #9AA6AD; --trait: #33414A;
     --lapis: #7FA6E0; --lapis-fonce: #A9C3EC; --laiton: #D7A94B; --laiton-pale: #3A3020; --sceau: #E07A66;
+    --curio: #C99BD3; --curio-pale: #2C2231;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --pierre: #141B20; --velin: #1C252C; --encre: #E4E8EA; --gris: #9AA6AD; --trait: #33414A;
   --lapis: #7FA6E0; --lapis-fonce: #A9C3EC; --laiton: #D7A94B; --laiton-pale: #3A3020; --sceau: #E07A66;
+  --curio: #C99BD3; --curio-pale: #2C2231;
   color-scheme: dark;
 }
 
@@ -175,11 +179,11 @@ select {
 #vider-histo:hover { border-color: var(--sceau); color: var(--sceau); }
 
 /* mode et rencontre */
-.seg-mode { grid-auto-flow: row; grid-template-columns: repeat(2, 1fr); }
+.seg-mode { grid-auto-flow: row; grid-template-columns: repeat(3, 1fr); }
 .seg-mode label:first-child { grid-column: 1 / -1; }
 .seg-mode span { border-left: 1px solid var(--trait); border-top: 1px solid var(--trait); }
 .seg-mode label:first-child span { border-top: 0; border-left: 0; }
-.seg-mode label:nth-child(even) span { border-left: 0; }
+.seg-mode label:nth-child(2) span { border-left: 0; }
 .groupe { display: grid; gap: 1.1rem; padding: 1rem 0 .1rem; border-top: 1px solid var(--trait); }
 .groupe[hidden] { display: none; }
 .aide { margin: 0; color: var(--gris); font-size: .9rem; line-height: 1.4; }
@@ -250,7 +254,7 @@ select {
 .version a { color: inherit; text-underline-offset: 3px; }
 
 /* objets exotiques */
-.sceau.exo { background: transparent; box-shadow: inset 0 0 0 2px var(--lapis); color: var(--lapis); font-size: 1.4rem; border-radius: 50%; outline: 2px dashed var(--lapis); outline-offset: 3px; }
+.sceau.exo { background: transparent; box-shadow: inset 0 0 0 2px var(--curio); color: var(--curio); font-size: 1.4rem; border-radius: 50%; outline: 2px dashed var(--curio); outline-offset: 3px; }
 .item-table { margin: .2rem 0 .6rem; display: grid; gap: .4rem; justify-items: start; }
 .item-table[hidden] { display: none; }
 .table-detail { font-size: .9rem; color: var(--gris); }
@@ -371,3 +375,45 @@ a.ghost { display: inline-flex; align-items: center; color: inherit; text-decora
 @media (min-width: 640px) { .deux { grid-template-columns: 1fr 1fr; } .deux .tableau { margin: 0; } }
 .tableau-legende { margin: .5rem 0 -.2rem !important; font-size: .85rem; color: var(--gris); }
 .zoom { display: block; cursor: zoom-in; }
+
+/* ---------- curiosités : hors règles de COF ---------- */
+.options-maison { border: 1px dashed var(--trait); border-radius: 10px; padding: .1rem .8rem; }
+.options-maison[open] { padding-bottom: .8rem; }
+.options-maison summary { cursor: pointer; font-weight: 700; font-size: .95rem; padding: .5rem 0; }
+.options-maison .facultatif { font-size: .85rem; }
+.om-etat { font-weight: 500; font-size: .85rem; color: var(--curio); }
+.om-etat:not(:empty)::before { content: "· "; }
+.options-maison .field { margin-top: .3rem; }
+.lien-curio { margin: -.3rem 0 0; font-size: .875rem; color: var(--gris); }
+.lien-curio a, .avertissement a { color: var(--curio); text-underline-offset: 3px; }
+.item.item-exo { background: var(--curio-pale); border-color: var(--curio); border-style: dashed; position: relative; }
+.item.item-exo::after {
+  content: "Hors COF"; position: absolute; top: .7rem; right: .8rem;
+  font: 700 .72rem/1 var(--sans); letter-spacing: .06em; text-transform: uppercase;
+  color: var(--curio); border: 1.5px solid var(--curio); border-radius: 4px; padding: .25rem .4rem;
+  transform: rotate(4deg);
+}
+.item-exo .item-cat { padding-right: 5.5rem; }
+.item-exo .item-alerte { color: var(--curio); }
+.proposition { border: 1px dashed var(--curio); border-radius: 14px; padding: .9rem; display: grid; gap: .7rem; }
+.prop-titre { margin: 0; font: 700 1.15rem var(--serif); color: var(--curio); }
+.prop-titre span { font: 500 .8rem var(--sans); text-transform: uppercase; letter-spacing: .05em; margin-left: .4rem; }
+.prop-actions { display: flex; flex-wrap: wrap; gap: .4rem; }
+.prop-actions .primaire { background: var(--curio); border-color: var(--curio); }
+.prop-actions .primaire:hover { background: var(--curio); filter: brightness(.9); }
+.avertissement { max-width: 46rem; margin: 0 0 1.5rem; padding: .9rem 1.1rem; border: 1px dashed var(--curio); border-radius: 12px; background: var(--curio-pale); }
+.avertissement p { margin: 0; font-size: .95rem; }
+.av-titre { font-weight: 700; color: var(--curio); margin-bottom: .3rem !important; }
+.curio .go { background: var(--curio); }
+.curio .go:hover { background: var(--curio); filter: brightness(.9); }
+.curio .masthead h1 { color: var(--curio); }
+.annexe-titre { margin-top: 1rem !important; color: var(--curio); }
+.sommaire .annexe-liste a { color: var(--curio); }
+.doc-corps section.annexe { border-top: 2px dashed var(--curio); margin-top: 1rem; }
+.annexe-bandeau { display: inline-block; margin: 1rem 0 0 !important; padding: .25rem .6rem; border: 1px dashed var(--curio); border-radius: 999px; font-size: .85rem; color: var(--curio); background: var(--curio-pale); }
+.annexe h2 { color: var(--curio); margin-top: .6rem !important; }
+.annexe a { color: var(--curio); }
+@media (max-width: 520px) {
+  .proposition { padding: .6rem .5rem; }
+  .item-exo .item-cat { padding-right: 0; margin-top: 1.5rem; }
+}

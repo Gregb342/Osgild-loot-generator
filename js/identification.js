@@ -157,7 +157,7 @@
       case "Potion": return "une fiole";
       case "Parchemin": return "un parchemin";
       case "Projectiles": return n.replace(/ \+\d.*$/, "");
-      case "Objet exotique": return (item.apparence || "un objet étrange").split(" ; ")[0];
+      case "Objet exotique": case "Curiosité": return (item.apparence || "un objet étrange").split(" ; ")[0];
       default: return "un objet";
     }
   }

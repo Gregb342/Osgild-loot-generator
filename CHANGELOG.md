@@ -1,5 +1,16 @@
 # Nouveautés
 
+## 0.4.0 bêta (3 novembre 2026)
+
+Les objets exotiques deviennent des **curiosités** et passent à part : le générateur reste fidèle à COF par défaut.
+
+- **Cabinet des curiosités** (`curiosites.html`) : une page dédiée pour tirer des curiosités, avec un avertissement clair (contenu maison, hors règles de COF), le choix de la divinité ou de la puissance, et son propre historique.
+- Le mode « Objet exotique » disparaît du générateur : il reste le butin d'une rencontre, l'objet majeur, l'objet mineur et le consommable.
+- Dans le butin d'une rencontre, le réglage passe dans un bloc **« Options maison »** replié, toujours désactivé par défaut (il s'ouvre seul s'il est actif).
+- Une curiosité tirée dans un butin est seulement **proposée**, dans un encadré à part : « Garder dans le butin » ou « Écarter ». Tant qu'elle n'est pas gardée, elle n'entre ni dans « Copier le butin » ni dans « Texte pour les joueurs ».
+- Identité visuelle à part : carte mauve à bordure en pointillés et tampon « Hors COF ».
+- Aide : les curiosités passent en annexe, avec deux nouvelles captures ; la visite guidée n'en parle plus. Captures d'écran mises à jour.
+
 ## 0.3.0 bêta (27 octobre 2026)
 
 - **Page d'aide** (`aide.html`, lien en haut du générateur) : mode d'emploi illustré de captures d'écran, ce qui vient du livre, les règles maison et leurs raisons, et les probabilités réelles (argent par NC, chances d'objets magiques et exotiques par source et par ampleur, poids des catégories, difficultés d'identification), calculées en direct depuis les fichiers de données.

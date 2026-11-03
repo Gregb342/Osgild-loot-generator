@@ -14,7 +14,7 @@ window.AIDE_TXT = {
   },
   mode: {
     titre: "Que tirer ?",
-    txt: "Le butin complet d'une rencontre (argent, équipement, magie), ou un objet seul : majeur (le plus puissant autorisé), mineur (colonne niveau ÷ 2), consommable, ou exotique (règle maison).",
+    txt: "Le butin complet d'une rencontre (argent, équipement, magie), ou un objet seul : majeur (le plus puissant autorisé), mineur (colonne niveau ÷ 2) ou consommable.",
     ancre: "modes"
   },
   source: {
@@ -43,14 +43,14 @@ window.AIDE_TXT = {
     ancre: "menace-nc"
   },
   exotiques: {
-    titre: "Objets exotiques",
-    txt: "Des objets étranges, narratifs ou inquiétants, liés à une divinité ou une puissance d'Osgild. Hors règles du livre, à arbitrer. « Rares » : de 2 à 12 % selon l'ampleur ; « Fréquents » : trois fois plus.",
-    ancre: "exotiques"
+    titre: "Curiosités (option maison)",
+    txt: "Des objets étranges liés aux puissances d'Osgild, qui ne font pas partie de COF. « Rares » : de 2 à 12 % de chances selon l'ampleur ; « Fréquentes » : trois fois plus. Une curiosité tirée est proposée à part, à garder ou écarter.",
+    ancre: "curiosites"
   },
   patron: {
     titre: "Lié à",
-    txt: "La divinité ou la puissance dont l'objet tient son effet. Son domaine donne le ton : lumineux, neutre, sombre ou fou. Règle maison, hors règles du livre.",
-    ancre: "exotiques"
+    txt: "La divinité ou la puissance dont l'objet tient son effet. Son domaine donne le ton : lumineux, neutre, sombre ou fou. Contenu maison, hors règles de COF.",
+    ancre: "curiosites"
   },
   categorie: {
     titre: "Catégorie",

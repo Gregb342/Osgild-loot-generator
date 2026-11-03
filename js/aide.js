@@ -39,8 +39,8 @@
 
   /* sources */
   const exo = id => (X && X.exotisme[id]) || 1;
-  tableau("t-sources", [["Source", { t: "Richesse", span: 3 }, "Magie", "Gemmes", "Exotisme"], ["", "corps", "repaire", "fin", "", "", ""]],
-    S.liste.map(s => [esc(s.nom), nb(s.richesse.corps, 2), nb(s.richesse.repaire, 2), nb(s.richesse.fin, 2), nb(s.magie, 2), nb(s.gemmes, 2), nb(exo(s.id), 2)]),
+  tableau("t-sources", [["Source", { t: "Richesse", span: 3 }, "Magie", "Gemmes"], ["", "corps", "repaire", "fin", "", ""]],
+    S.liste.map(s => [esc(s.nom), nb(s.richesse.corps, 2), nb(s.richesse.repaire, 2), nb(s.richesse.fin, 2), nb(s.magie, 2), nb(s.gemmes, 2)]),
     { classe: "num" });
 
   /* états de l'équipement */
@@ -90,8 +90,8 @@
   /* objets exotiques */
   if (X) {
     const ch = (a, s, f) => Math.min(0.9, X.chance[a] * (f ? X.multiplicateurFrequents : 1) * exo(s.id));
-    tableau("t-exo", [["Source", { t: "Rares", span: 3 }, { t: "Fréquents", span: 3 }], ["", "corps", "repaire", "fin", "corps", "repaire", "fin"]],
-      S.liste.map(s => [esc(s.nom)].concat([false, true].flatMap(f => ["corps", "repaire", "fin"].map(a => pc(ch(a, s, f)))))),
+    tableau("t-exo", [["Source", "Affinité", { t: "Rares", span: 3 }, { t: "Fréquentes", span: 3 }], ["", "", "corps", "repaire", "fin", "corps", "repaire", "fin"]],
+      S.liste.map(s => [esc(s.nom), "× " + nb(exo(s.id), 2)].concat([false, true].flatMap(f => ["corps", "repaire", "fin"].map(a => pc(ch(a, s, f)))))),
       { classe: "num" });
     const nEff = X.patrons.reduce((a, p) => a + p.effets.length, 0);
     $("t-nb-exo").textContent = X.patrons.length + " patrons (divinités et puissances) et " + nEff + " effets possibles";

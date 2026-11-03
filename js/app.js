@@ -3,6 +3,9 @@
   const M = window.MOTEUR, T = window.LIVRE, S = window.SOURCES;
   const $ = s => document.querySelector(s);
   const form = $("#form"), sortie = $("#sortie"), tpl = $("#tpl-objet");
+  /* Deux pages partagent ce script : le générateur (butin) et le Cabinet des curiosités */
+  const CURIO = document.body.dataset.page === "curiosites";
+  const K = CURIO ? { form: "curio-form", histo: "curio-histo" } : { form: "form", histo: "histo" };
 
   const CATS = {
     hasard: "Au hasard",
@@ -41,12 +44,14 @@
 
   function majForm() {
     const v = val();
+    if (CURIO) { $("#cible").innerHTML = texteCible(v); store.set(K.form, v); return; }
     const objets = ["majeur", "mineur", "consommable"].includes(v.mode);
     const exo = v.mode === "exotique";
     $("#f-cat").hidden = !objets;
     $("#f-nb").hidden = !(objets || exo);
     $("#f-renc").hidden = v.mode !== "rencontre";
-    $("#f-patron").hidden = !exo;
+    const om = $("#options-maison");
+    if (om) om.querySelector(".om-etat").textContent = v.exotiques !== "jamais" ? "curiosités " + (v.exotiques === "rares" ? "rares" : "fréquentes") : "";
     if (objets) majCategories(v.mode);
     const src = S.liste.find(x => x.id === v.source);
     $("#aide-source").textContent = src ? src.aide : "";
@@ -56,12 +61,12 @@
     $("#f-menace").title = v.nc !== "" ? "Le NC précis remplace la menace" : "";
     $("#nc-effacer").hidden = v.nc === "";
     $("#cible").innerHTML = texteCible(v);
-    store.set("form", v);
+    store.set(K.form, v);
   }
 
   function nmTxt(x) { return x === "C" ? "consommables seulement" : x === 0 ? "aucun objet magique" : "niveau de magie " + x; }
   function texteCible(v) {
-    if (v.mode === "exotique") return "Objet <strong>hors règles du livre</strong> : effet original, narratif ou inquiétant, sans bonus chiffré permanent en combat. À arbitrer par le MJ.";
+    if (v.mode === "exotique") return "Curiosité <strong>hors règles de COF</strong> : effet original, narratif ou inquiétant, sans bonus chiffré permanent en combat. À arbitrer par le MJ.";
     if (v.mode === "rencontre") {
       const nc = M.ncRencontre(v.niveau, v.menace, v.nc);
       const maj = M.nmCible(v.niveau, v.cadre, "majeur");
@@ -102,14 +107,16 @@
 
   function carte(o, idx) {
     const n = tpl.content.firstElementChild.cloneNode(true);
+    n.dataset.idx = idx;
+    if (o.exotique) n.classList.add("item-exo");
     const sceau = n.querySelector(".sceau"), s = sceau.querySelector("span");
     if (o.bourse) { sceau.classList.add("or"); s.textContent = "or"; }
     else if (o.exotique) { sceau.classList.add("exo"); s.textContent = "✶"; }
     else if (o.equip) { sceau.classList.add("equip"); s.innerHTML = '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5 3 6V3h3l11.5 11.5"/><path d="m13 19 6-6"/><path d="m16 16 4 4"/><path d="m19 21 2-2"/><path d="M9.5 17.5 21 6V3h-3L6.5 14.5"/><path d="m11 19-6-6"/><path d="m8 16-4 4"/><path d="m5 21-2-2"/></svg>'; }
     else if (o.consommable || !o.nm) { sceau.classList.add("conso"); s.textContent = "C"; }
     else s.textContent = o.nm;
-    sceau.title = o.exotique ? "Objet exotique, hors règles du livre" : o.bourse ? "Argent et valeurs" : o.equip ? "Équipement non magique" : (o.consommable || !o.nm) ? "Consommable : niveau de magie 0" : "Niveau de magie " + o.nm;
-    n.querySelector(".item-cat").textContent = o.exotique ? "Objet exotique (hors règles), lié " + window.EXOTIQUES.a(o.patron.nom) + ", " + o.patron.dom
+    sceau.title = o.exotique ? "Curiosité, hors règles de COF" : o.bourse ? "Argent et valeurs" : o.equip ? "Équipement non magique" : (o.consommable || !o.nm) ? "Consommable : niveau de magie 0" : "Niveau de magie " + o.nm;
+    n.querySelector(".item-cat").textContent = o.exotique ? "Curiosité (hors règles de COF), liée " + window.EXOTIQUES.a(o.patron.nom) + ", " + o.patron.dom
       : o.source ? o.source + ", " + o.ampleur.toLowerCase() : o.cat;
     if (o.table) {
       const bt = n.querySelector(".item-table");
@@ -195,20 +202,50 @@
     return n;
   }
 
+  /* Une curiosité tirée dans un butin de rencontre est seulement proposée :
+     elle n'entre dans le butin (copie, texte joueurs) que si le MJ la garde. */
+  const enAttente = o => o.propose && !o.garde;
+  const retenus = lot => lot.filter(o => !enAttente(o));
+
   function afficher(lot, anime) {
     courant = lot;
     sortie.classList.toggle("nouveau", !!anime);
     sortie.innerHTML = "";
     if (!lot.length) { sortie.innerHTML = '<p class="vide">Rien tiré cette fois : relance les dés.</p>'; return; }
-    lot.forEach((o, i) => sortie.appendChild(carte(o, i)));
+    lot.forEach((o, i) => { if (!enAttente(o)) sortie.appendChild(carte(o, i)); });
+    const props = lot.map((o, i) => [o, i]).filter(([o]) => enAttente(o));
+    if (props.length) {
+      const bloc = document.createElement("section");
+      bloc.className = "proposition";
+      bloc.setAttribute("aria-label", "Curiosité proposée");
+      bloc.innerHTML = `<p class="prop-titre">Curiosité proposée <span>hors règles de COF</span></p>
+        <p class="aide">Les options maison ont fait apparaître un objet étrange. Il ne fait pas partie du butin tant que tu ne le gardes pas.</p>`;
+      props.forEach(([o, i]) => {
+        bloc.appendChild(carte(o, i));
+        const act = document.createElement("div");
+        act.className = "prop-actions";
+        act.innerHTML = `<button type="button" class="ghost small primaire" data-garder="${i}">Garder dans le butin</button>
+          <button type="button" class="ghost small" data-ecarter="${i}">Écarter</button>`;
+        bloc.appendChild(act);
+      });
+      sortie.appendChild(bloc);
+    }
     $("#copier").hidden = false;
     $("#copier-joueurs").hidden = false;
   }
+  sortie.addEventListener("click", e => {
+    const g = e.target.closest("[data-garder]"), x = e.target.closest("[data-ecarter]");
+    if (!g && !x) return;
+    if (g) { courant[+g.dataset.garder].garde = true; toast("Curiosité ajoutée au butin"); }
+    else { courant.splice(+x.dataset.ecarter, 1); toast("Curiosité écartée"); }
+    afficher(courant, false);
+    majEntree();
+  });
 
   /* Noms et phrases déjà donnés (historique + butin affiché), pour ne pas les resservir */
   function dejaUtilises() {
     const noms = new Set(), textes = new Set();
-    const lots = store.get("histo", []).map(e => e.lot).concat([courant]);
+    const lots = store.get(K.histo, []).map(e => e.lot).concat([courant]);
     lots.forEach(lot => (lot || []).forEach(o => {
       if (!o.lore) return;
       noms.add(o.lore.nom);
@@ -221,7 +258,7 @@
     if (lore) { courant[i].lore = lore; lore.indices = IDENT.indices(courant[i]); }
     else delete courant[i].lore;
     sortie.classList.remove("nouveau");
-    sortie.children[i].replaceWith(carte(courant[i], i));
+    sortie.querySelector(`[data-idx="${i}"]`).replaceWith(carte(courant[i], i));
     majEntree();
   }
 
@@ -231,8 +268,9 @@
     if (!o) return;
     o.req = r;
     if (courant[i].candidat) o.candidat = true;
+    ["propose", "garde"].forEach(k => { if (courant[i][k]) o[k] = true; });
     courant[i] = o;
-    const old = sortie.children[i];
+    const old = sortie.querySelector(`[data-idx="${i}"]`);
     const n = carte(o, i);
     sortie.classList.remove("nouveau");
     old.replaceWith(n);
@@ -242,19 +280,19 @@
   /* ---------- historique ---------- */
   let courantId = null;
   function sauver(lot) {
-    const h = store.get("histo", []);
+    const h = store.get(K.histo, []);
     courantId = Date.now();
     h.unshift({ id: courantId, t: courantId, titre: resume(val()), lot });
-    store.set("histo", h.slice(0, 20));
+    store.set(K.histo, h.slice(0, 20));
     majHisto();
   }
   /* Met à jour l'entrée d'historique du butin affiché (relance, histoire) */
   function majEntree() {
-    const h = store.get("histo", []);
+    const h = store.get(K.histo, []);
     const e = h.find(x => (x.id || x.t) === courantId);
     if (!e) return;
     e.lot = courant;
-    store.set("histo", h);
+    store.set(K.histo, h);
     majHisto();
   }
   function resume(v) {
@@ -263,29 +301,29 @@
       const nc = M.ncRencontre(v.niveau, v.menace, v.nc);
       return `${src ? src.nom : "Rencontre"}, ${S.ampleur[v.ampleur].label.toLowerCase()}, NC ${nc === 0.5 ? "½" : nc}`;
     }
-    if (v.mode === "exotique") return "Objet exotique" + (v.nombre > 1 ? " × " + v.nombre : "");
+    if (v.mode === "exotique") return "Curiosité" + (v.nombre > 1 ? " × " + v.nombre : "") + (v.patron && window.EXOTIQUES ? ", liée " + window.EXOTIQUES.a((window.EXOTIQUES.patrons.find(p => p.id === v.patron) || { nom: "" }).nom) : "");
     const quoi = { majeur: "Objet majeur", mineur: "Objet mineur", consommable: "Consommable" }[v.mode] || "Tirage";
     return `${quoi}, niveau ${v.niveau}, ${CADRES[v.cadre]}`;
   }
   function majHisto() {
-    const h = store.get("histo", []);
+    const h = store.get(K.histo, []);
     const ol = $("#histo");
     $("#vider-histo").hidden = !h.length;
     if (!h.length) { ol.innerHTML = "<li>Aucun butin pour l'instant.</li>"; return; }
     ol.innerHTML = h.map((e, i) => `<li><button type="button" data-h="${i}">${esc(e.titre)}</button>
-      <small>${new Date(e.t).toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" })} : ${esc(e.lot.map(o => o.nom).join(", "))}</small></li>`).join("");
+      <small>${new Date(e.t).toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" })} : ${esc(retenus(e.lot).map(o => o.nom).join(", "))}</small></li>`).join("");
   }
   $("#vider-histo").addEventListener("click", () => {
-    const n = store.get("histo", []).length;
+    const n = store.get(K.histo, []).length;
     if (!confirm(`Supprimer les ${n} butin${n > 1 ? "s" : ""} de l'historique ?`)) return;
-    store.set("histo", []);
+    store.set(K.histo, []);
     majHisto();
     toast("Historique vidé");
   });
   $("#histo").addEventListener("click", e => {
     const b = e.target.closest("[data-h]");
     if (!b) return;
-    const h = store.get("histo", []);
+    const h = store.get(K.histo, []);
     const entree = h[+b.dataset.h];
     afficher(entree.lot, false);
     courantId = entree.id || entree.t;
@@ -327,7 +365,7 @@
     }
   }
   $("#copier-joueurs").addEventListener("click", () => {
-    const blocs = courant.map(o => {
+    const blocs = retenus(courant).map(o => {
       const t = IDENT.texteJoueurs(o);
       if (!t) return "";
       const titre = o.bourse ? "Argent et objets de valeur" : o.equip ? "Équipement" : cap(IDENT.forme(o));
@@ -336,7 +374,7 @@
     copier(blocs.join("\n\n"), "Texte pour les joueurs copié");
   });
   $("#copier").addEventListener("click", async () => {
-    const txt = enTexte(courant);
+    const txt = enTexte(retenus(courant));
     try { await navigator.clipboard.writeText(txt); toast("Butin copié"); }
     catch (e) {
       const ta = document.createElement("textarea"); ta.value = txt; document.body.appendChild(ta); ta.select();
@@ -355,22 +393,24 @@
   function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
 
   /* ---------- démarrage ---------- */
-  $("#source").innerHTML = S.liste.map(x => `<option value="${x.id}">${esc(x.nom)}</option>`).join("");
+  if ($("#source")) $("#source").innerHTML = S.liste.map(x => `<option value="${x.id}">${esc(x.nom)}</option>`).join("");
   const X = window.EXOTIQUES;
-  if (X) $("#patron").innerHTML = '<option value="">Au hasard</option>' + X.patrons.map(p => `<option value="${p.id}">${esc(cap(p.nom))} (${esc(p.dom)})</option>`).join("");
-  $("#nc-effacer").addEventListener("click", () => { form.nc.value = ""; majForm(); form.nc.focus(); });
-  const prev = store.get("form", null);
+  if (X && $("#patron")) $("#patron").innerHTML = '<option value="">Au hasard</option>' + X.patrons.map(p => `<option value="${p.id}">${esc(cap(p.nom))} (${esc(p.dom)})</option>`).join("");
+  if ($("#nc-effacer")) $("#nc-effacer").addEventListener("click", () => { form.nc.value = ""; majForm(); form.nc.focus(); });
+  const prev = store.get(K.form, null);
   if (prev) {
-    if (prev.mode === "butin" || prev.mode === "bourse") prev.mode = "rencontre";
-    form.niveau.value = prev.niveau || 3;
+    if (prev.mode === "butin" || prev.mode === "bourse" || (!CURIO && prev.mode === "exotique")) prev.mode = "rencontre";
+    if (form.niveau) form.niveau.value = prev.niveau || 3;
     ["cadre", "mode", "ampleur", "menace", "exotiques"].forEach(k => { const r = form.querySelector(`input[name="${k}"][value="${prev[k]}"]`); if (r) r.checked = true; });
-    form.nombre.value = prev.nombre || 1;
-    form.adversaires.value = prev.adversaires || 3;
-    form.nc.value = prev.nc === undefined ? "" : prev.nc;
-    if (prev.source && S.liste.some(x => x.id === prev.source)) form.source.value = prev.source;
-    if (prev.patron && X && X.patrons.some(p => p.id === prev.patron)) form.patron.value = prev.patron;
+    if (form.nombre) form.nombre.value = prev.nombre || 1;
+    if (form.adversaires) form.adversaires.value = prev.adversaires || 3;
+    if (form.nc) form.nc.value = prev.nc === undefined ? "" : prev.nc;
+    if (form.source && prev.source && S.liste.some(x => x.id === prev.source)) form.source.value = prev.source;
+    if (form.patron && prev.patron && X && X.patrons.some(p => p.id === prev.patron)) form.patron.value = prev.patron;
   }
   majForm();
-  if (prev && prev.categorie) { $("#categorie").value = prev.categorie; if (!$("#categorie").value) $("#categorie").value = "hasard"; }
+  const om = $("#options-maison");
+  if (om && val().exotiques !== "jamais") om.open = true;
+  if (prev && prev.categorie && $("#categorie")) { $("#categorie").value = prev.categorie; if (!$("#categorie").value) $("#categorie").value = "hasard"; }
   majHisto();
 })();

@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cabinet des curiosités</title>
+<meta name="description" content="Objets étranges liés aux puissances d'Osgild, hors règles de Chroniques Oubliées Fantasy : contenu maison pour le Butin d'Osgild.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%23A97B22'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%23F6F7F4' stroke-width='2'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,500;0,700;1,400&family=Alegreya+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=0.4.0-beta">
+</head>
+<body data-page="curiosites" class="curio">
+<div class="page">
+  <header class="masthead">
+    <p class="retour"><a href="index.html">← Retour au générateur</a></p>
+    <h1>Cabinet des curiosités</h1>
+    <p>Des objets étranges, narratifs ou inquiétants, chacun lié à une divinité ou une puissance d'Osgild.</p>
+  </header>
+
+  <aside class="avertissement" aria-label="Contenu maison">
+    <p class="av-titre">Contenu maison, hors règles de COF</p>
+    <p>Rien de ce cabinet ne vient du livre de base de <i>Chroniques Oubliées Fantasy</i>. Ces objets n'apportent pas de bonus chiffré permanent en combat : ce sont des effets narratifs, à double tranchant ou inquiétants, avec une contrepartie et un arbitrage proposé. À toi de juger s'ils ont leur place à ta table. <a href="aide.html#curiosites">En savoir plus</a></p>
+  </aside>
+
+  <main class="layout">
+    <form class="controls" id="form" autocomplete="off">
+      <input type="hidden" name="mode" value="exotique">
+      <div class="field">
+        <label for="patron">Lié à <button type="button" class="info" data-info="patron" aria-label="Aide : divinité ou puissance liée" aria-expanded="false">i</button></label>
+        <select id="patron" name="patron"></select>
+      </div>
+
+      <div class="field">
+        <label for="nombre">Nombre de curiosités <button type="button" class="info" data-info="nombre" aria-label="Aide : nombre de curiosités" aria-expanded="false">i</button></label>
+        <div class="stepper">
+          <button type="button" data-step="-1" aria-label="Une curiosité de moins">−</button>
+          <input id="nombre" name="nombre" type="number" min="1" max="8" value="1" inputmode="numeric">
+          <button type="button" data-step="1" aria-label="Une curiosité de plus">+</button>
+        </div>
+      </div>
+
+      <p class="cible" id="cible" aria-live="polite"></p>
+
+      <button type="submit" class="go">Ouvrir une vitrine</button>
+      <p class="lien-curio">Pour en glisser dans un butin de rencontre : dans le générateur, « Options maison », sous le formulaire de rencontre.</p>
+    </form>
+
+    <section class="results" aria-labelledby="res-titre">
+      <div class="results-head">
+        <h2 id="res-titre">Curiosités <button type="button" class="info" data-info="resultat" aria-label="Aide : lire le résultat" aria-expanded="false">i</button></h2>
+        <div class="head-actions">
+          <button type="button" class="ghost" id="copier-joueurs" hidden>Texte pour les joueurs</button>
+          <button type="button" class="ghost" id="copier" hidden>Copier</button>
+        </div>
+      </div>
+      <div id="sortie" aria-live="polite">
+        <p class="vide">Choisis une divinité ou une puissance, ou laisse le hasard faire, puis ouvre une vitrine.</p>
+      </div>
+
+      <details class="tools" id="historique">
+        <summary>Curiosités précédentes</summary>
+        <ol class="histo" id="histo"></ol>
+        <button type="button" class="ghost small" id="vider-histo" hidden>Vider l'historique</button>
+      </details>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p class="version">Version <span id="version">0.4.0 bêta</span> · <a href="index.html">générateur</a> · <a href="aide.html">aide</a> · <a href="https://github.com/Gregb342/Osgild-loot-generator/issues">signaler un problème</a></p>
+    <p>Contenu maison, inspiré des divinités et puissances décrites dans l'Atlas d'Osgild (© Black Book Éditions). Outil de fan, gratuit et non officiel.</p>
+  </footer>
+</div>
+
+<template id="tpl-objet">
+  <article class="item">
+    <div class="sceau" aria-hidden="true"><span></span></div>
+    <div class="item-body">
+      <p class="item-cat"></p>
+      <h3 class="item-nom"></h3>
+      <p class="item-tech"></p>
+      <p class="item-candidat"></p>
+      <ul class="item-effets"></ul>
+      <ul class="item-equip"></ul>
+      <ul class="item-legende"></ul>
+      <ul class="item-trouv"></ul>
+      <p class="item-app"></p>
+      <div class="item-lore" hidden>
+        <p class="lore-glose"></p>
+        <p class="lore-txt"></p>
+        <p class="item-orig"></p>
+        <p class="lore-sous">Indices visibles sur l'objet</p>
+        <ul class="lore-indices"></ul>
+        <p class="lore-complete"></p>
+        <div class="lore-actions">
+          <button type="button" class="ghost small lore-version">Autre nom et légende</button>
+          <button type="button" class="ghost small lore-origine">Autre origine</button>
+          <button type="button" class="ghost small lore-retirer">Retirer l'histoire</button>
+        </div>
+      </div>
+      <div class="item-jet" hidden>
+        <p class="aide">Si le buveur a déjà une potion active et rate son test de CON (difficulté 10, puis 15, 20…) :</p>
+        <button type="button" class="ghost small jet-effet">Effet secondaire (2d6)</button>
+        <p class="jet-out"></p>
+      </div>
+      <details class="ident" hidden>
+        <summary>Identification</summary>
+        <p class="lore-sous">Ce que les PJ découvrent à l'usage</p>
+        <ul class="ident-percu"></ul>
+        <p class="lore-sous">Pour l'identifier</p>
+        <ul class="ident-tests"></ul>
+      </details>
+      <div class="item-table" hidden>
+        <button type="button" class="ghost small jet-table"></button>
+        <p class="jet-out"></p>
+        <details class="table-detail">
+          <summary>Voir la table</summary>
+          <ol></ol>
+        </details>
+      </div>
+      <ul class="item-notes"></ul>
+      <p class="item-rappel"></p>
+      <p class="item-alerte"></p>
+      <div class="item-foot">
+        <p class="item-val"></p>
+        <div class="foot-actions">
+          <button type="button" class="ghost small joueurs">Texte joueurs</button>
+          <button type="button" class="ghost small histoire">Lui donner une histoire</button>
+          <button type="button" class="ghost small relancer">Relancer</button>
+        </div>
+      </div>
+      <details class="jets">
+        <summary>Jets de dés</summary>
+        <ol></ol>
+      </details>
+    </div>
+  </article>
+</template>
+
+<script src="js/voies.js?v=0.4.0-beta"></script>
+<script src="js/tables.js?v=0.4.0-beta"></script>
+<script src="js/maison.js?v=0.4.0-beta"></script>
+<script src="js/sources.js?v=0.4.0-beta"></script>
+<script src="js/filtres.js?v=0.4.0-beta"></script>
+<script src="js/exotiques.js?v=0.4.0-beta"></script>
+<script src="js/equipement.js?v=0.4.0-beta"></script>
+<script src="js/engine.js?v=0.4.0-beta"></script>
+<script src="js/identification.js?v=0.4.0-beta"></script>
+<script src="js/lore.js?v=0.4.0-beta"></script>
+<script src="js/app.js?v=0.4.0-beta"></script>
+<script src="js/aide-textes.js?v=0.4.0-beta"></script>
+<script src="js/bulles.js?v=0.4.0-beta"></script>
+</body>
+</html>

@@ -507,12 +507,12 @@
     let caprice = null;
     if (Math.random() < pCaprice) { caprice = any(X.caprices[patron.ton]); effets.push("Caprice : " + caprice); log.push({ de: "", v: "", txt: "caprice : " + caprice.toLowerCase() }); }
     return {
-      cat: "Objet exotique", exotique: true, nom: cap(forme) + " " + ef.n, nm: null,
+      cat: "Curiosité", exotique: true, nom: cap(forme) + " " + ef.n, nm: null,
       patron: { id: patron.id, nom: patron.nom, dom: patron.dom, ton: patron.ton },
       effets, visible: !!ef.v, table: ef.table || null,
       apparence: cap(forme) + " ; " + any(patron.signes) + ".",
       valeur: null, valeurNote: "hors marché",
-      alertes: ["Hors règles du livre : objet exotique (règle maison), à arbitrer par le MJ."],
+      alertes: ["Hors règles de COF : curiosité (règle maison), à arbitrer par le MJ."],
       log, req: { exotique: true, patron: opts.patron || null, source: opts.source || null }
     };
   }
@@ -808,8 +808,8 @@
     if (X && opts.exotiques && opts.exotiques !== "jamais") {
       const p = Math.min(0.9, X.chance[ampleur] * (opts.exotiques === "frequents" ? X.multiplicateurFrequents : 1) * (X.exotisme[src.id] || 1));
       const k = d(100);
-      log.push({ de: "d100", v: k, txt: "objet exotique si " + Math.round(p * 100) + " ou moins : " + (k <= Math.round(p * 100) ? "oui" : "non") });
-      if (k <= Math.round(p * 100)) { const o = exotique({ source: src.id }); if (o) objets.push(o); }
+      log.push({ de: "d100", v: k, txt: "curiosité (option maison) si " + Math.round(p * 100) + " ou moins : " + (k <= Math.round(p * 100) ? "oui" : "non") });
+      if (k <= Math.round(p * 100)) { const o = exotique({ source: src.id }); if (o) { o.propose = true; objets.push(o); } }
     }
     return [carteArgent].concat(carteEquip ? [carteEquip] : [], objets);
   }

@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,500;0,700;1,400&family=Alegreya+Sans:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=0.3.0-beta">
+<link rel="stylesheet" href="css/style.css?v=0.4.0-beta">
 </head>
 <body class="doc">
 <div class="page">
@@ -39,7 +39,6 @@
             <li><a href="#carte-objet">Objet magique</a></li>
             <li><a href="#identification">Identification</a></li>
             <li><a href="#histoire">Histoire d'un objet</a></li>
-            <li><a href="#exotiques">Objets exotiques</a></li>
             <li><a href="#historique">Copier et retrouver</a></li>
           </ol>
         </li>
@@ -50,10 +49,13 @@
             <li><a href="#proba-argent">Argent</a></li>
             <li><a href="#proba-magie">Objets magiques</a></li>
             <li><a href="#categories">Catégories d'objets</a></li>
-            <li><a href="#proba-exotiques">Objets exotiques</a></li>
           </ol>
         </li>
         <li><a href="#donnees">Données et versions</a></li>
+      </ol>
+      <p class="sommaire-titre annexe-titre">Annexe, hors COF</p>
+      <ol class="annexe-liste">
+        <li><a href="#curiosites">Cabinet des curiosités</a></li>
       </ol>
     </nav>
 
@@ -84,8 +86,6 @@
           <dd>Un objet permanent lu dans la colonne niveau ÷ 2 de la même table : un bon objet, mais pas le plus puissant.</dd>
           <dt>Consommable</dt>
           <dd>Une potion, un parchemin ou des projectiles magiques.</dd>
-          <dt>Objet exotique</dt>
-          <dd>Règle maison : un objet étrange lié à une divinité ou une puissance d'Osgild. Voir <a href="#exotiques">Objets exotiques</a>.</dd>
         </dl>
         <p>Pour un objet seul, tu peux restreindre la <b>catégorie</b> (arme, armure, objet de pouvoir…) et en tirer jusqu'à <b>huit</b> d'un coup.</p>
       </section>
@@ -93,7 +93,7 @@
       <section id="reglages">
         <h2>Les réglages</h2>
         <figure class="etroite">
-          <a href="img/aide/formulaire.webp" class="zoom"><img src="img/aide/formulaire.webp" width="672" height="2160" alt="Le formulaire du butin d'une rencontre : niveau, cadre, mode, source, ampleur, nombre d'adversaires, menace, objets exotiques et NC précis." loading="lazy"></a>
+          <a href="img/aide/formulaire.webp" class="zoom"><img src="img/aide/formulaire.webp" width="672" height="2132" alt="Le formulaire du butin d'une rencontre : niveau, cadre, mode, source, ampleur, nombre d'adversaires, menace, NC précis et options maison repliées." loading="lazy"></a>
           <figcaption>Le formulaire en mode « Le butin d'une rencontre ».</figcaption>
         </figure>
 
@@ -106,7 +106,7 @@
         <h3 id="sources">Sources : sur qui, ou où ?</h3>
         <p>Chaque source décrit un type d'adversaire ou de lieu. Elle règle combien d'argent il y a (richesse), la part de magie, les gemmes, l'équipement porté (armes, armures, état), les trouvailles typiques, les catégories d'objets magiques probables et parfois une règle spéciale (fausse monnaie, or des fées, composants à prélever…). Des loups n'ont pas de bourse ; une tour de sorcier regorge de parchemins.</p>
         <div class="tableau" id="t-sources"></div>
-        <p class="note">Richesse : multiplicateur du barème d'argent pour chaque ampleur. Magie : multiplicateur des chances d'objets magiques. Exotisme : multiplicateur des chances d'objet exotique.</p>
+        <p class="note">Richesse : multiplicateur du barème d'argent pour chaque ampleur. Magie : multiplicateur des chances d'objets magiques.</p>
 
         <h3 id="ampleur">Ampleur</h3>
         <dl class="defs">
@@ -135,7 +135,7 @@
 
         <h3 id="carte-argent">Argent et équipement</h3>
         <figure>
-          <a href="img/aide/carte-argent.webp" class="zoom"><img src="img/aide/carte-argent.webp" width="1488" height="982" alt="Carte d'argent : le total, la répartition en pièces d'or, d'argent et de cuivre, une gemme, et des trouvailles." loading="lazy"></a>
+          <a href="img/aide/carte-argent.webp" class="zoom"><img src="img/aide/carte-argent.webp" width="1488" height="924" alt="Carte d'argent : le total, la répartition en pièces d'or, d'argent et de cuivre, une gemme, et des trouvailles." loading="lazy"></a>
           <figcaption>La carte d'argent : le total, puis le détail.</figcaption>
         </figure>
         <ul>
@@ -145,7 +145,7 @@
           <li>Les encadrés dorés signalent les règles spéciales (fausse monnaie, or des fées, composants à prélever) et l'encombrement des pièces au-delà de 200.</li>
         </ul>
         <figure>
-          <a href="img/aide/carte-equipement.webp" class="zoom"><img src="img/aide/carte-equipement.webp" width="1488" height="1666" alt="Carte d'équipement non magique : des armes et armures avec leurs dégâts, leur défense, leur état et leur valeur." loading="lazy"></a>
+          <a href="img/aide/carte-equipement.webp" class="zoom"><img src="img/aide/carte-equipement.webp" width="1488" height="1088" alt="Carte d'équipement non magique : des armes et armures avec leurs dégâts, leur défense, leur état et leur valeur." loading="lazy"></a>
           <figcaption>L'équipement récupérable, avec ses statistiques du livre.</figcaption>
         </figure>
         <p>Chaque pièce a ses statistiques du livre (DM, DEF, AGI max, portée), son encombrement (règle optionnelle de l'Atlas) et un <b>état</b> qui change sa valeur et parfois son usage :</p>
@@ -153,11 +153,11 @@
 
         <h3 id="carte-objet">Objet magique</h3>
         <figure>
-          <a href="img/aide/carte-objet.webp" class="zoom"><img src="img/aide/carte-objet.webp" width="1488" height="1170" alt="Carte d'un objet magique : sceau doré avec le niveau de magie, nom, effets, description pour les joueurs, identification dépliée, valeur et boutons." loading="lazy"></a>
+          <a href="img/aide/carte-objet.webp" class="zoom"><img src="img/aide/carte-objet.webp" width="1488" height="1536" alt="Carte d'un objet magique : sceau doré avec le niveau de magie, nom, effets, description pour les joueurs, identification dépliée, valeur et boutons." loading="lazy"></a>
           <figcaption>Un objet magique, identification dépliée.</figcaption>
         </figure>
         <ul>
-          <li>Le <b>sceau</b> donne le niveau de magie (NM). Un sceau fin marqué « C » est un consommable, un sceau en pointillés bleus ✶ un objet exotique.</li>
+          <li>Le <b>sceau</b> donne le niveau de magie (NM). Un sceau fin marqué « C » est un consommable.</li>
           <li>Les <b>effets</b> sont prêts à jouer : bonus, propriétés, sort reproduit avec son rang, sa voie et son profil, utilisations par jour.</li>
           <li>« À décrire aux joueurs » : son apparence, sans rien révéler.</li>
           <li>La <b>valeur</b> suit le livre (NM² × 200 po ; rang² × 50 pa pour une potion ou un parchemin) ; la revente se fait à moitié prix au plus.</li>
@@ -174,19 +174,11 @@
 
         <h3 id="histoire">Histoire d'un objet</h3>
         <figure>
-          <a href="img/aide/carte-histoire.webp" class="zoom"><img src="img/aide/carte-histoire.webp" width="1488" height="1718" alt="Carte d'un objet avec une histoire : nom propre, légende, origine tirée sur 3d10, indices visibles et boutons pour changer de version." loading="lazy"></a>
+          <a href="img/aide/carte-histoire.webp" class="zoom"><img src="img/aide/carte-histoire.webp" width="1488" height="1882" alt="Carte d'un objet avec une histoire : nom propre, légende, origine tirée sur 3d10, indices visibles et boutons pour changer de version." loading="lazy"></a>
           <figcaption>Le même objet après « Lui donner une histoire ».</figcaption>
         </figure>
         <p>Par défaut, un objet n'a pas d'histoire : la plupart des objets magiques sont des outils. Pour ceux qui comptent, le bouton <b>« Lui donner une histoire »</b> tire son origine sur la table 3d10 du livre (provenance, époque, peuple), puis génère un nom propre et une légende cohérents avec cette origine, et les <b>indices visibles</b> sur l'objet (poinçon nain, motif impérial, odeur de soufre…) que les PJ peuvent remarquer. « Autre nom et légende » garde l'origine, « Autre origine » repart de zéro, « Retirer l'histoire » rend l'objet anonyme. L'objet majeur d'une fin d'aventure est signalé comme candidat.</p>
         <p>Le générateur évite de resservir un nom ou une phrase déjà sortis dans ton historique.</p>
-
-        <h3 id="exotiques">Objets exotiques</h3>
-        <figure>
-          <a href="img/aide/carte-exotique.webp" class="zoom"><img src="img/aide/carte-exotique.webp" width="1488" height="1582" alt="Carte d'un objet exotique lié à une divinité d'Osgild : sceau en pointillés, effet, contrepartie, usage, caprice et identification." loading="lazy"></a>
-          <figcaption>Un objet exotique : son effet, sa contrepartie, et parfois une table à lancer.</figcaption>
-        </figure>
-        <p>Règle maison, hors règles du livre. Un objet exotique est lié à une divinité ou une puissance d'Osgild (divinités de l'Atlas, Puissances, saisons, Seigneurs des animaux, Roi-Sorcier, ombre féérique). Son domaine donne le <b>ton</b> : lumineux, neutre, sombre ou fou. Il n'apporte pas de bonus chiffré permanent en combat : c'est un effet narratif, à double tranchant ou inquiétant, avec une contrepartie et une fréquence d'usage. Un objet sur deux a en plus un <b>caprice</b>. Les objets dangereux le montrent (aura, odeur, gravure).</p>
-        <p>On les obtient en mode « Objet exotique » (en choisissant la divinité, ou au hasard), ou dans le butin d'une rencontre si tu les actives : <b>Jamais</b> (par défaut), <b>Rares</b> ou <b>Fréquents</b>. Les sources étranges (fées, tour de sorcier, tombeau, culte) en donnent plus souvent ; les chances exactes sont dans <a href="#proba-exotiques">Probabilités</a>. Il y en a <span id="t-nb-exo"></span>.</p>
 
         <h3 id="historique">Copier, relancer, retrouver</h3>
         <ul>
@@ -235,9 +227,7 @@
           <dt>Les histoires à la demande</dt>
           <dd>Un nom et une légende pour chaque épée +1 diluent ce qui compte. Le MJ choisit quels objets en méritent une ; les niveaux de magie élevés ont des légendes plus prestigieuses.</dd>
           <dt>Identification : compléments</dt>
-          <dd>Le prix d'un sage (10 pa par NM) et l'indice en goûtant une potion sont des suggestions maison, tout comme les tests propres aux objets exotiques.</dd>
-          <dt>Objets exotiques</dt>
-          <dd>Pour les objets qui font une histoire à eux seuls, à la manière des artefacts farfelus ou inquiétants d'autres jeux, mais ancrés dans les divinités et puissances d'Osgild. Désactivés par défaut.</dd>
+          <dd>Le prix d'un sage (10 pa par NM) et l'indice en goûtant une potion sont des suggestions maison.</dd>
         </dl>
       </section>
 
@@ -262,10 +252,6 @@
           <div class="tableau" id="t-cat-conso"></div>
         </div>
 
-        <h3 id="proba-exotiques">Objets exotiques</h3>
-        <p>Chance qu'un butin de rencontre contienne un objet exotique, selon le réglage.</p>
-        <div class="tableau" id="t-exo"></div>
-        <p class="note">Base « Rares » : 2 % sur les corps, 6 % en repaire, 12 % en fin d'aventure, × 3 en « Fréquents », × l'exotisme de la source, plafonné à 90 %.</p>
       </section>
 
       <section id="donnees">
@@ -273,20 +259,49 @@
         <p>Tout fonctionne dans ton navigateur : aucun compte, aucun serveur. Tes derniers réglages et tes 20 derniers butins sont gardés dans le stockage local du navigateur (ils restent sur cet appareil, et disparaissent si tu effaces les données du site).</p>
         <p>Le générateur est en bêta : <a href="https://github.com/Gregb342/Osgild-loot-generator/blob/main/CHANGELOG.md">liste des nouveautés</a>, <a href="https://github.com/Gregb342/Osgild-loot-generator/issues">signaler un problème ou proposer une idée</a>, <a href="https://github.com/Gregb342/Osgild-loot-generator">code source</a>.</p>
       </section>
+
+      <section id="curiosites" class="annexe">
+        <p class="annexe-bandeau">Annexe · contenu maison, hors règles de COF</p>
+        <h2>Cabinet des curiosités</h2>
+        <p>Tout ce qui précède applique le livre ou comble ses vides (combien a un bandit dans sa bourse, par exemple). Les curiosités, elles, <b>ajoutent du contenu</b> que COF n'a pas : de nouveaux objets et de nouveaux effets. C'est pour ça qu'elles vivent à part, sur leur propre page, le <a href="curiosites.html">Cabinet des curiosités</a>, et qu'elles sont désactivées dans le générateur.</p>
+
+        <figure>
+          <a href="img/aide/cabinet.webp" class="zoom"><img src="img/aide/cabinet.webp" width="2560" height="1800" alt="La page du Cabinet des curiosités : avertissement « contenu maison, hors règles de COF », choix de la divinité ou de la puissance, et des curiosités tirées." loading="lazy"></a>
+          <figcaption>Le Cabinet des curiosités, sur sa propre page.</figcaption>
+        </figure>
+
+        <h3 id="curio-objet">Ce qu'est une curiosité</h3>
+        <figure>
+          <a href="img/aide/carte-exotique.webp" class="zoom"><img src="img/aide/carte-exotique.webp" width="1488" height="1430" alt="Carte d'une curiosité : fond mauve, bordure en pointillés, tampon « Hors COF », sceau étoilé, effet, arbitrage, usages et identification." loading="lazy"></a>
+          <figcaption>Une curiosité : carte mauve, tampon « Hors COF », son effet, son arbitrage, et parfois une table à lancer.</figcaption>
+        </figure>
+        <p>Une curiosité est liée à une divinité ou une puissance d'Osgild (divinités de l'Atlas, Puissances, saisons, Seigneurs des animaux, Roi-Sorcier, ombre féérique). Son domaine donne le <b>ton</b> : lumineux, neutre, sombre ou fou. Elle n'apporte pas de bonus chiffré permanent en combat : c'est un effet narratif, à double tranchant ou inquiétant, avec un arbitrage en termes de COF et une fréquence d'usage. Une sur deux a en plus un <b>caprice</b>. Les objets dangereux le montrent (aura, odeur, gravure). Il y a <span id="t-nb-exo"></span>.</p>
+        <p>Elles ont leurs propres moyens d'identification, maison eux aussi : un prêtre de la puissance liée reconnaît sa marque, un érudit des cultes reconnaît le symbole, un lanceur de sorts peut tenter une analyse.</p>
+
+        <h3 id="curio-butin">Dans un butin de rencontre</h3>
+        <p>Dans le générateur, ouvre <b>Options maison</b> sous le formulaire de rencontre et règle <b>Curiosités</b> : Jamais (par défaut), Rares ou Fréquentes. Quand une curiosité est tirée, elle n'est pas mêlée au butin : elle apparaît dans un encadré <b>« Curiosité proposée »</b> sous les autres cartes. « Garder dans le butin » l'y ajoute ; « Écarter » la retire. Tant qu'elle n'est pas gardée, elle n'entre ni dans « Copier le butin » ni dans « Texte pour les joueurs ».</p>
+        <figure>
+          <a href="img/aide/curio-proposee.webp" class="zoom"><img src="img/aide/curio-proposee.webp" width="1488" height="1122" alt="Encadré « Curiosité proposée, hors règles de COF » sous un butin, avec la carte de la curiosité et les boutons « Garder dans le butin » et « Écarter »." loading="lazy"></a>
+          <figcaption>Une curiosité proposée sous le butin d'un tombeau : à garder ou à écarter.</figcaption>
+        </figure>
+        <p>Les sources étranges (fées, tour de sorcier, tombeau, culte) en proposent plus souvent :</p>
+        <div class="tableau" id="t-exo"></div>
+        <p class="note">Base « Rares » : 2 % sur les corps, 6 % en repaire, 12 % en fin d'aventure, × 3 en « Fréquentes », × l'affinité de la source avec l'étrange, plafonné à 90 %.</p>
+      </section>
     </main>
   </div>
 
   <footer class="foot">
-    <p class="version">Version <span id="version">0.3.0 bêta</span> · <a href="index.html">générateur</a></p>
-    <p>Tables issues du livre de base de <i>Chroniques Oubliées Fantasy</i> 2<sup>e</sup> édition, © Black Book Éditions. Les sources de butin, l'argent, les gemmes, les trouvailles, les descriptions et les objets exotiques sont des règles maison. Outil de fan, gratuit et non officiel.</p>
+    <p class="version">Version <span id="version">0.4.0 bêta</span> · <a href="index.html">générateur</a> · <a href="curiosites.html">cabinet des curiosités</a></p>
+    <p>Tables issues du livre de base de <i>Chroniques Oubliées Fantasy</i> 2<sup>e</sup> édition, © Black Book Éditions. Les sources de butin, l'argent, les gemmes, les trouvailles, les descriptions et les curiosités sont des règles maison. Outil de fan, gratuit et non officiel.</p>
   </footer>
 </div>
 
-<script src="js/tables.js?v=0.3.0-beta"></script>
-<script src="js/maison.js?v=0.3.0-beta"></script>
-<script src="js/sources.js?v=0.3.0-beta"></script>
-<script src="js/exotiques.js?v=0.3.0-beta"></script>
-<script src="js/equipement.js?v=0.3.0-beta"></script>
-<script src="js/aide.js?v=0.3.0-beta"></script>
+<script src="js/tables.js?v=0.4.0-beta"></script>
+<script src="js/maison.js?v=0.4.0-beta"></script>
+<script src="js/sources.js?v=0.4.0-beta"></script>
+<script src="js/exotiques.js?v=0.4.0-beta"></script>
+<script src="js/equipement.js?v=0.4.0-beta"></script>
+<script src="js/aide.js?v=0.4.0-beta"></script>
 </body>
 </html>

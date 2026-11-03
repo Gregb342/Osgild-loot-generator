@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,500;0,700;1,400&family=Alegreya+Sans:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=0.3.0-beta">
+<link rel="stylesheet" href="css/style.css?v=0.4.0-beta">
 </head>
 <body>
 <div class="page">
@@ -46,7 +46,6 @@
           <label><input type="radio" name="mode" value="majeur"><span>Objet majeur</span></label>
           <label><input type="radio" name="mode" value="mineur"><span>Objet mineur</span></label>
           <label><input type="radio" name="mode" value="consommable"><span>Consommable</span></label>
-          <label><input type="radio" name="mode" value="exotique"><span>Objet exotique</span></label>
         </div>
       </fieldset>
 
@@ -85,15 +84,6 @@
           </div>
         </fieldset>
 
-        <fieldset class="field">
-          <legend>Objets exotiques <span class="facultatif">(hors règles)</span> <button type="button" class="info" data-info="exotiques" aria-label="Aide : objets exotiques" aria-expanded="false">i</button></legend>
-          <div class="seg" role="radiogroup">
-            <label><input type="radio" name="exotiques" value="jamais" checked><span>Jamais</span></label>
-            <label><input type="radio" name="exotiques" value="rares"><span>Rares</span></label>
-            <label><input type="radio" name="exotiques" value="frequents"><span>Fréquents</span></label>
-          </div>
-        </fieldset>
-
         <div class="field">
           <label for="nc">NC précis <span class="facultatif">(facultatif)</span> <button type="button" class="info" data-info="nc" aria-label="Aide : NC précis" aria-expanded="false">i</button></label>
           <div class="nc-row">
@@ -101,11 +91,19 @@
             <button type="button" class="ghost small" id="nc-effacer" hidden>Effacer</button>
           </div>
         </div>
-      </div>
 
-      <div class="field" id="f-patron" hidden>
-        <label for="patron">Lié à <button type="button" class="info" data-info="patron" aria-label="Aide : divinité ou puissance liée" aria-expanded="false">i</button></label>
-        <select id="patron" name="patron"></select>
+        <details class="options-maison" id="options-maison">
+          <summary>Options maison <span class="facultatif">hors règles de COF</span> <span class="om-etat"></span></summary>
+          <fieldset class="field">
+            <legend>Curiosités <button type="button" class="info" data-info="exotiques" aria-label="Aide : curiosités" aria-expanded="false">i</button></legend>
+            <div class="seg" role="radiogroup">
+              <label><input type="radio" name="exotiques" value="jamais" checked><span>Jamais</span></label>
+              <label><input type="radio" name="exotiques" value="rares"><span>Rares</span></label>
+              <label><input type="radio" name="exotiques" value="frequents"><span>Fréquentes</span></label>
+            </div>
+            <p class="aide">Des objets étranges liés aux puissances d'Osgild, qui ne font pas partie de COF. Une curiosité tirée t'est proposée à part : tu la gardes ou tu l'écartes.</p>
+          </fieldset>
+        </details>
       </div>
 
       <div class="field" id="f-cat" hidden>
@@ -125,6 +123,7 @@
       <p class="cible" id="cible" aria-live="polite"></p>
 
       <button type="submit" class="go">Lancer les dés</button>
+      <p class="lien-curio">Envie d'étrange ? Le <a href="curiosites.html">Cabinet des curiosités</a> tire des objets hors règles de COF, liés aux puissances d'Osgild.</p>
     </form>
 
     <section class="results" aria-labelledby="res-titre">
@@ -148,8 +147,8 @@
   </main>
 
   <footer class="foot">
-    <p class="version">Version <span id="version">0.3.0 bêta</span> · <a href="aide.html">aide</a> · <a href="https://github.com/Gregb342/Osgild-loot-generator/blob/main/CHANGELOG.md">nouveautés</a> · <a href="https://github.com/Gregb342/Osgild-loot-generator/issues">signaler un problème</a></p>
-    <p>Tables issues du livre de base de <i>Chroniques Oubliées Fantasy</i> 2<sup>e</sup> édition, © Black Book Éditions. Les sources de butin, l'argent, les gemmes, les trouvailles et les descriptions sont des règles maison, inspirées des tables de trésor de D&amp;D. Outil de fan, gratuit et non officiel.</p>
+    <p class="version">Version <span id="version">0.4.0 bêta</span> · <a href="aide.html">aide</a> · <a href="curiosites.html">cabinet des curiosités</a> · <a href="https://github.com/Gregb342/Osgild-loot-generator/blob/main/CHANGELOG.md">nouveautés</a> · <a href="https://github.com/Gregb342/Osgild-loot-generator/issues">signaler un problème</a></p>
+    <p>Tables issues du livre de base de <i>Chroniques Oubliées Fantasy</i> 2<sup>e</sup> édition, © Black Book Éditions. Les sources de butin, l'argent, les gemmes, les trouvailles, les descriptions et les curiosités sont des règles maison, inspirées des tables de trésor de D&amp;D. Outil de fan, gratuit et non officiel.</p>
   </footer>
 </div>
 
@@ -218,19 +217,19 @@
   </article>
 </template>
 
-<script src="js/voies.js?v=0.3.0-beta"></script>
-<script src="js/tables.js?v=0.3.0-beta"></script>
-<script src="js/maison.js?v=0.3.0-beta"></script>
-<script src="js/sources.js?v=0.3.0-beta"></script>
-<script src="js/filtres.js?v=0.3.0-beta"></script>
-<script src="js/exotiques.js?v=0.3.0-beta"></script>
-<script src="js/equipement.js?v=0.3.0-beta"></script>
-<script src="js/engine.js?v=0.3.0-beta"></script>
-<script src="js/identification.js?v=0.3.0-beta"></script>
-<script src="js/lore.js?v=0.3.0-beta"></script>
-<script src="js/app.js?v=0.3.0-beta"></script>
-<script src="js/aide-textes.js?v=0.3.0-beta"></script>
-<script src="js/bulles.js?v=0.3.0-beta"></script>
-<script src="js/visite.js?v=0.3.0-beta"></script>
+<script src="js/voies.js?v=0.4.0-beta"></script>
+<script src="js/tables.js?v=0.4.0-beta"></script>
+<script src="js/maison.js?v=0.4.0-beta"></script>
+<script src="js/sources.js?v=0.4.0-beta"></script>
+<script src="js/filtres.js?v=0.4.0-beta"></script>
+<script src="js/exotiques.js?v=0.4.0-beta"></script>
+<script src="js/equipement.js?v=0.4.0-beta"></script>
+<script src="js/engine.js?v=0.4.0-beta"></script>
+<script src="js/identification.js?v=0.4.0-beta"></script>
+<script src="js/lore.js?v=0.4.0-beta"></script>
+<script src="js/app.js?v=0.4.0-beta"></script>
+<script src="js/aide-textes.js?v=0.4.0-beta"></script>
+<script src="js/bulles.js?v=0.4.0-beta"></script>
+<script src="js/visite.js?v=0.4.0-beta"></script>
 </body>
 </html>
