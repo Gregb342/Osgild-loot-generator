@@ -1,0 +1,65 @@
+# Déploiement sur le VPS (https://cofloot.fantasy-tools.fr).
+#
+# Le site est statique : à chaque push sur main, les fichiers sont synchronisés
+# par rsync dans /opt/apps/cofloot, dossier servi en lecture seule par Caddy.
+# Lancement manuel possible depuis l'onglet Actions (workflow_dispatch).
+#
+# Secrets requis (Settings → Secrets and variables → Actions) :
+#   VPS_HOST         IP ou nom du VPS
+#   VPS_SSH_KEY      clé privée de l'utilisateur `deploy` (clé dédiée au CI)
+#   VPS_KNOWN_HOSTS  sortie de `ssh-keyscan -t ed25519 <IP>` (épingle l'empreinte du serveur)
+name: deploy
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://cofloot.fantasy-tools.fr
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configurer SSH
+        env:
+          SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+
+      - name: Synchroniser les fichiers
+        env:
+          HOST: ${{ secrets.VPS_HOST }}
+        run: |
+          # --delete retire du serveur les fichiers supprimés du repo.
+          # Seuls les fichiers servis au navigateur sont envoyés.
+          rsync -az --delete --chmod=D755,F644 \
+            --exclude='.git/' --exclude='.github/' \
+            --exclude='README.md' --exclude='CHANGELOG.md' \
+            --exclude='.nojekyll' --exclude='.gitignore' \
+            ./ "deploy@$HOST:/opt/apps/cofloot/"
+
+      - name: Vérifier que le site répond
+        run: |
+          for i in 1 2 3; do
+            if curl -fsS https://cofloot.fantasy-tools.fr/ -o /dev/null; then
+              echo "Site en ligne"; exit 0
+            fi
+            sleep 5
+          done
+          echo "::error::Le site ne répond pas après le déploiement"; exit 1
