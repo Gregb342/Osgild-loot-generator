@@ -1,6 +1,6 @@
 # Butin d'Osgild
 
-*Version 0.4.0 bêta*. Les changements sont listés dans [CHANGELOG.md](CHANGELOG.md). Mode d'emploi, règles et probabilités : [`aide.html`](https://gregb342.github.io/osgild-loot-generator/aide.html).
+*Version 0.4.1 bêta*. Les changements sont listés dans [CHANGELOG.md](CHANGELOG.md). Mode d'emploi, règles et probabilités : [`aide.html`](https://cofloot.fantasy-tools.fr/aide.html).
 
 Générateur de trésors pour **Chroniques Oubliées Fantasy 2e édition**, calibré sur le niveau des PJ et le cadre de jeu (classique, high fantasy, low fantasy).
 
@@ -47,7 +47,9 @@ Numérotation `MAJEUR.MINEUR.CORRECTIF` (préfixe bêta tant que l'outil est en 
 
 ## Mettre en ligne
 
-Settings → Pages → Source : *Deploy from a branch*, branche `main`, dossier `/ (root)`.
+Le site est publié sur https://cofloot.fantasy-tools.fr/ : chaque push sur `main` le déploie automatiquement sur le serveur (`.github/workflows/deploy.yml`).
+
+Aperçu des liens partagés : balises Open Graph dans chaque page, images `img/partage.jpg` et `img/partage-curiosites.jpg` (1200 × 630). `robots.txt` et `sitemap.xml` sont à la racine ; mettre à jour les dates du sitemap à chaque version.
 
 ## Licence
 

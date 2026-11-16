@@ -1,5 +1,12 @@
 # Nouveautés
 
+## 0.4.1 bêta (16 novembre 2026)
+
+- **Aperçu des liens** : un lien vers le générateur, l'aide ou le cabinet des curiosités, collé sur un forum, Discord ou Facebook, s'affiche avec un titre, une description et une image.
+- Titres et descriptions des pages plus parlants pour les moteurs de recherche ; adresse de référence (`canonical`), `robots.txt` et `sitemap.xml`.
+- Aide : les phrases calculées en direct ont un texte de repli, et un avertissement s'affiche si JavaScript est désactivé.
+- Le README pointe vers cofloot.fantasy-tools.fr.
+
 ## 0.4.0 bêta (3 novembre 2026)
 
 Les objets exotiques deviennent des **curiosités** et passent à part : le générateur reste fidèle à COF par défaut.
